@@ -33,6 +33,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 
 /**
  * Class to encapsulate options menu item animation handling.
@@ -48,13 +50,8 @@ import android.view.animation.AnimationUtils;
  */
 public class AnimatedMenuItem {
 
-    /**
-     * The standard animation used. Has to be provided with this class.
-     */
-    public static final int DEFAULT_ANIMATION = R.anim.clockwise_rotation;
-
     private final MenuItem mItem;
-    private final Animation mRefreshAnimation;
+    private final Animation mAnimation;
 
     /**
      * Initialize animation on a given {@link MenuItem}.
@@ -74,7 +71,7 @@ public class AnimatedMenuItem {
      *            The animation used.
      */
     public AnimatedMenuItem(Activity activity, final Menu menu, MenuItem item,
-        Integer actionLayoutId, int animationId) {
+        Integer actionLayoutId, Integer animationId) {
         mItem = item;
 
         if (actionLayoutId != null) {
@@ -95,8 +92,20 @@ public class AnimatedMenuItem {
             });
         }
 
-        mRefreshAnimation = AnimationUtils.loadAnimation(activity, animationId);
-        mRefreshAnimation.setRepeatCount(Animation.INFINITE);
+        if (animationId == null) {
+            mAnimation = new RotateAnimation(0,
+                360,
+                Animation.RELATIVE_TO_SELF,
+                0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f);
+            mAnimation.setDuration(1000);
+            mAnimation.setInterpolator(new LinearInterpolator());
+        } else {
+            mAnimation = AnimationUtils.loadAnimation(activity, animationId);
+        }
+
+        mAnimation.setRepeatCount(Animation.INFINITE);
     }
 
     /**
@@ -137,7 +146,7 @@ public class AnimatedMenuItem {
      *            menu.xml file with the "android:actionLayout" attribute.
      */
     public AnimatedMenuItem(Activity activity, Menu menu, MenuItem item, Integer actionLayoutId) {
-        this(activity, menu, item, actionLayoutId, DEFAULT_ANIMATION);
+        this(activity, menu, item, actionLayoutId, null);
     }
 
     /**
@@ -156,7 +165,7 @@ public class AnimatedMenuItem {
      *            menu.xml file with the "android:actionLayout" attribute.
      */
     public AnimatedMenuItem(Activity activity, Menu menu, int itemId, Integer actionLayoutId) {
-        this(activity, menu, menu.findItem(itemId), actionLayoutId, DEFAULT_ANIMATION);
+        this(activity, menu, menu.findItem(itemId), actionLayoutId, null);
     }
 
     /**
@@ -208,7 +217,7 @@ public class AnimatedMenuItem {
      *            The actual menu item to animate.
      */
     public AnimatedMenuItem(Activity activity, Menu menu, MenuItem item) {
-        this(activity, menu, item, null, DEFAULT_ANIMATION);
+        this(activity, menu, item, null, null);
     }
 
     /**
@@ -224,7 +233,7 @@ public class AnimatedMenuItem {
      *            The actual menu item to animate, provided as resource ID.
      */
     public AnimatedMenuItem(Activity activity, Menu menu, int itemId) {
-        this(activity, menu, menu.findItem(itemId), null, DEFAULT_ANIMATION);
+        this(activity, menu, menu.findItem(itemId), null, null);
     }
 
     /**
@@ -233,7 +242,9 @@ public class AnimatedMenuItem {
     public void startAnimation() {
         View actionView = mItem.getActionView();
 
-        if (actionView != null) actionView.startAnimation(mRefreshAnimation);
+        if (actionView != null) {
+            actionView.startAnimation(mAnimation);
+        }
     }
 
     /**
