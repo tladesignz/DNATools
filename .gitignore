@@ -1,0 +1,21 @@
+# Eclipse
+.classpath
+.project
+.settings
+
+# MacOS
+.DS_Store
+
+# Android
+*.apk
+!release/*.apk
+*.ap_
+*.dex
+*.class
+bin/
+gen/
+local.properties
+
+# Gradle
+.gradle
+build
