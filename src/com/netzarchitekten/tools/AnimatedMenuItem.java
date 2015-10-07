@@ -126,7 +126,7 @@ public class AnimatedMenuItem {
      *            The animation used.
      */
     public AnimatedMenuItem(Activity activity, final Menu menu, int itemId, Integer actionLayoutId,
-        int animationId) {
+        Integer animationId) {
         this(activity, menu, menu.findItem(itemId), actionLayoutId, animationId);
     }
 
@@ -145,7 +145,7 @@ public class AnimatedMenuItem {
      *            The layout used for animation. This can also be set in the
      *            menu.xml file with the "android:actionLayout" attribute.
      */
-    public AnimatedMenuItem(Activity activity, Menu menu, MenuItem item, Integer actionLayoutId) {
+    public AnimatedMenuItem(Activity activity, Menu menu, MenuItem item, int actionLayoutId) {
         this(activity, menu, item, actionLayoutId, null);
     }
 
@@ -164,44 +164,8 @@ public class AnimatedMenuItem {
      *            The layout used for animation. This can also be set in the
      *            menu.xml file with the "android:actionLayout" attribute.
      */
-    public AnimatedMenuItem(Activity activity, Menu menu, int itemId, Integer actionLayoutId) {
+    public AnimatedMenuItem(Activity activity, Menu menu, int itemId, int actionLayoutId) {
         this(activity, menu, menu.findItem(itemId), actionLayoutId, null);
-    }
-
-    /**
-     * Initialize animation on a given {@link MenuItem}.
-     *
-     * @param activity
-     *            Context used for various operations in constructor. (Reference
-     *            not kept!)
-     * @param menu
-     *            Menu used for various operations in constructor. (Reference
-     *            not kept!)
-     * @param item
-     *            The actual menu item to animate.
-     * @param animationId
-     *            The animation used.
-     */
-    public AnimatedMenuItem(Activity activity, Menu menu, MenuItem item, int animationId) {
-        this(activity, menu, item, null, animationId);
-    }
-
-    /**
-     * Initialize animation on a given {@link MenuItem}.
-     *
-     * @param activity
-     *            Context used for various operations in constructor. (Reference
-     *            not kept!)
-     * @param menu
-     *            Menu used for various operations in constructor. (Reference
-     *            not kept!)
-     * @param itemId
-     *            The actual menu item to animate, provided as resource ID.
-     * @param animationId
-     *            The animation used.
-     */
-    public AnimatedMenuItem(Activity activity, Menu menu, int itemId, int animationId) {
-        this(activity, menu, menu.findItem(itemId), null, animationId);
     }
 
     /**
