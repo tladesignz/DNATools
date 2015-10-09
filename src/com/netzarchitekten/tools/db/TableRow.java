@@ -25,6 +25,9 @@
  */
 package com.netzarchitekten.tools.db;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -452,6 +455,37 @@ public abstract class TableRow {
         int idx = getIndex(c, column);
 
         return idx < 0 ? null : c.getString(idx);
+    }
+
+    /**
+     * <p>
+     * Proxy to {@link Cursor#getColumnIndex(String)},
+     * {@link Cursor#isNull(int)} and {@link Cursor#getLong(int)} and finally
+     * create a {@link Calendar} object out of it, where the long value is
+     * considered to be milliseconds since Jan., 1st 1970.
+     * </p>
+     * <p>
+     * Handles inexistent column gracefully.
+     * </p>
+     *
+     * @param c
+     *            Cursor pointing to a specific row.
+     * @param column
+     *            The column name.
+     * @return 0 if NULL or column inexistent, or the real column value
+     *         otherwise. (Which could be 0...)
+     * @see Cursor#getColumnIndex(String)
+     * @see Cursor#getLong(int)
+     */
+    protected static Calendar getCalendar(Cursor c, String column) {
+        Long timestamp = getLongObject(c, column);
+
+        if (timestamp == null) return null;
+
+        Calendar cal = new GregorianCalendar();
+        cal.setTimeInMillis(timestamp);
+
+        return cal;
     }
 
     /**
