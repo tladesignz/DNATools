@@ -129,7 +129,7 @@ public abstract class TableRow {
      *         the INSERT failed. Ignore this on compound primary keys. It won't
      *         make sense in that case.
      */
-    protected Integer save(Uri uri, ContentValues values, String where, Integer... ids) {
+    protected Long save(Uri uri, ContentValues values, String where, Long... ids) {
         if (mCr != null && (!mPersisted || mChanged)) {
             String[] selectionArgs = new String[ids.length];
 
@@ -159,7 +159,7 @@ public abstract class TableRow {
                         mPersisted = true;
                         mChanged = false;
 
-                        ids[0] = Integer.valueOf(idUri.toString());
+                        ids[0] = Long.valueOf(idUri.toString());
                     }
                 }
             }
@@ -188,7 +188,7 @@ public abstract class TableRow {
      *            used in the where argument.
      * @return true on success, false on failure.
      */
-    protected boolean delete(Uri uri, String where, Integer... ids) {
+    protected boolean delete(Uri uri, String where, Long... ids) {
         boolean deleted = false;
 
         if (mCr != null && mPersisted) {
