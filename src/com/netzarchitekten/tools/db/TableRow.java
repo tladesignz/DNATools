@@ -340,6 +340,100 @@ public abstract class TableRow {
     /**
      * <p>
      * Proxy to {@link Cursor#getColumnIndex(String)},
+     * {@link Cursor#isNull(int)} and {@link Cursor#getFloat(int)}.
+     * </p>
+     * <p>
+     * Handles inexistent column gracefully.
+     * </p>
+     *
+     * @param c
+     *            Cursor pointing to a specific row.
+     * @param column
+     *            The column name.
+     * @return 0 if NULL or column inexistent, or the real column value
+     *         otherwise. (Which could be 0...)
+     * @see Cursor#getColumnIndex(String)
+     * @see Cursor#getFloat(int)
+     */
+    protected static float getFloat(Cursor c, String column) {
+        int idx = getIndex(c, column);
+
+        return idx < 0 ? 0 : c.getFloat(idx);
+    }
+
+    /**
+     * <p>
+     * Proxy to {@link Cursor#getColumnIndex(String)},
+     * {@link Cursor#isNull(int)} and {@link Cursor#getFloat(int)}.
+     * </p>
+     * <p>
+     * Handles inexistent column gracefully.
+     * </p>
+     *
+     * @param c
+     *            Cursor pointing to a specific row.
+     * @param column
+     *            The column name.
+     * @return NULL if NULL or column inexistent, or the column value otherwise.
+     * @see Cursor#getColumnIndex(String)
+     * @see Cursor#getFloat(int)
+     */
+    protected static Float getFloatObj(Cursor c, String column) {
+        int idx = getIndex(c, column);
+
+        return idx < 0 ? null : c.getFloat(idx);
+    }
+
+    /**
+     * <p>
+     * Proxy to {@link Cursor#getColumnIndex(String)},
+     * {@link Cursor#isNull(int)} and {@link Cursor#getDouble(int)}.
+     * </p>
+     * <p>
+     * Handles inexistent column gracefully.
+     * </p>
+     *
+     * @param c
+     *            Cursor pointing to a specific row.
+     * @param column
+     *            The column name.
+     * @return 0 if NULL or column inexistent, or the real column value
+     *         otherwise. (Which could be 0...)
+     * @see Cursor#getColumnIndex(String)
+     * @see Cursor#getDouble(int)
+     */
+    protected static double getDouble(Cursor c, String column) {
+        int idx = getIndex(c, column);
+
+        return idx < 0 ? 0 : c.getDouble(idx);
+    }
+
+    /**
+     * <p>
+     * Proxy to {@link Cursor#getColumnIndex(String)},
+     * {@link Cursor#isNull(int)} and {@link Cursor#getDouble(int)}.
+     * </p>
+     * <p>
+     * Handles inexistent column gracefully.
+     * </p>
+     *
+     * @param c
+     *            Cursor pointing to a specific row.
+     * @param column
+     *            The column name.
+     * @return NULL if NULL or column inexistent, or the column value otherwise.
+     * @see Cursor#getColumnIndex(String)
+     * @see Cursor#getDouble(int)
+     */
+    protected static Double getDoubleObj(Cursor c, String column) {
+        int idx = getIndex(c, column);
+
+        return idx < 0 ? null : c.getDouble(idx);
+    }
+
+    /**
+     * <p>
+     * Proxy to {@link Cursor#getColumnIndex(String)},
      * {@link Cursor#isNull(int)} and {@link Cursor#getString(int)}.
      * </p>
      * <p>
