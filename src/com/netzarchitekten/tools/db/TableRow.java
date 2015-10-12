@@ -133,20 +133,49 @@ public abstract class TableRow {
      *         make sense in that case.
      */
     protected Long save(Uri uri, ContentValues values, String where, Long... ids) {
+        return Long.valueOf(save(uri, values, where, toStrings(ids)));
+    }
+
+    /**
+     * <p>
+     * Store object properties to database table row, if the object is not
+     * persisted, yet, or if it was changed.
+     * </p>
+     * <p>
+     * If this object is flagged as {@link #mPersisted}, will do an UPDATE, else
+     * checks, if a row with the same primary key(s) value(s) exists. If not,
+     * INSERTs, else also UPDATEs and <b>therefore will overwrite rows
+     * silently</b>!
+     * </p>
+     * <p>
+     * ATTENTION: If a {@link Context} object wasn't provided via
+     * {@link #setContext(Context)}after recreation from a {@link Parcel}, this
+     * fails silently!
+     * </p>
+     *
+     * @param uri
+     *            The table URI.
+     * @param values
+     *            The column values.
+     * @param where
+     *            The selection criteria to identify this row uniquely.
+     * @param ids
+     *            The column values to identify this row uniquely in the order
+     *            used in the where argument.
+     * @return The new auto-increment ID of this row, if it was succesfully
+     *         INSERTed, or the first ids argument, if it was an UPDATE or if
+     *         the INSERT failed. Ignore this on compound primary keys. It won't
+     *         make sense in that case.
+     */
+    protected String save(Uri uri, ContentValues values, String where, String... ids) {
         if (mCr != null && (!mPersisted || mChanged)) {
-            String[] selectionArgs = new String[ids.length];
-
-            for (int i = 0; i < ids.length; i++) {
-                selectionArgs[i] = String.valueOf(ids[i]);
-            }
-
             if (mPersisted) {
-                if (mCr.update(uri, values, where, selectionArgs) > 0) {
+                if (mCr.update(uri, values, where, ids) > 0) {
                     mChanged = false;
                 }
             } else {
                 // Check, if we can find this row already.
-                Cursor c = mCr.query(uri, null, where, selectionArgs, null);
+                Cursor c = mCr.query(uri, null, where, ids, null);
 
                 if (c.getCount() > 0) {
                     // This row is existing, already!
@@ -162,7 +191,7 @@ public abstract class TableRow {
                         mPersisted = true;
                         mChanged = false;
 
-                        ids[0] = Long.valueOf(idUri.toString());
+                        ids[0] = idUri.toString();
                     }
                 }
             }
@@ -191,19 +220,13 @@ public abstract class TableRow {
      *            used in the where argument.
      * @return true on success, false on failure.
      */
-    protected boolean delete(Uri uri, String where, Long... ids) {
+    protected boolean delete(Uri uri, String where, Object... ids) {
         boolean deleted = false;
 
         if (mCr != null && mPersisted) {
-            String[] selectionArgs = new String[ids.length];
+            int count = mCr.delete(uri, where, toStrings(ids));
 
-            for (int i = 0; i < ids.length; i++) {
-                selectionArgs[i] = String.valueOf(ids[i]);
-            }
-
-            int count = mCr.delete(uri, where, selectionArgs);
-
-            deleted = count == 1;
+            deleted = count > 0;
 
             if (deleted) mPersisted = false;
         }
@@ -503,5 +526,22 @@ public abstract class TableRow {
         int idx = c.getColumnIndex(column);
 
         return (idx < 0 || c.isNull(idx)) ? -1 : idx;
+    }
+
+    /**
+     * Convert an array of objects to an array of strings properly.
+     *
+     * @param objects
+     *            The array of objects.
+     * @return an array of stringified objects.
+     */
+    private static String[] toStrings(Object[] objects) {
+        String[] strings = new String[objects.length];
+
+        for (int i = 0; i < objects.length; i++) {
+            strings[i] = String.valueOf(objects[i]);
+        }
+
+        return strings;
     }
 }
