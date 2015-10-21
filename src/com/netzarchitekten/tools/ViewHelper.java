@@ -277,7 +277,7 @@ public class ViewHelper {
      * Shows the current {@link View}.
      */
     public ViewHelper show() {
-        return toggle(false);
+        return toggle(true);
     }
 
     /**
