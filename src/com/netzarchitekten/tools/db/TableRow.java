@@ -95,6 +95,17 @@ public abstract class TableRow {
     }
 
     /**
+     * Returns the application context, in case you need it somewhere, so you
+     * don't have to pass around additional references.
+     *
+     * @return the application context or NULL in case this object was created
+     *         without one and it wasn't set, yet.
+     */
+    public Context getContext() {
+        return mContext;
+    }
+
+    /**
      * @return true, if row is persisted and unchanged, false otherwise.
      */
     public boolean isSaved() {
