@@ -102,24 +102,7 @@ public class NumberPickerPreference extends DialogPreference {
     public NumberPickerPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        TypedArray a = context.obtainStyledAttributes(attrs, sStyleable, 0, 0);
-
-        for (int i = 0; i < sStyleable.length; i++) {
-            switch (sStyleable[i]) {
-                case android.R.attr.minDate:
-                    mMin = a.getInt(i, 0);
-                    break;
-
-                case android.R.attr.max:
-                    mMax = a.getInt(i, 100);
-                    break;
-
-                case android.R.attr.selectable:
-                    mWrap = a.getBoolean(i, true);
-                    break;
-            }
-        }
-        a.recycle();
+        applyAttributes(attrs);
     }
 
     /**
@@ -129,6 +112,8 @@ public class NumberPickerPreference extends DialogPreference {
      */
     public NumberPickerPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        applyAttributes(attrs);
     }
 
     @Override
@@ -265,5 +250,32 @@ public class NumberPickerPreference extends DialogPreference {
         mPicker.requestLayout();
 
         return this;
+    }
+
+    /**
+     * Apply the given attributes to this preference.
+     *
+     * @param attrs
+     */
+    private void applyAttributes(AttributeSet attrs) {
+        TypedArray a = getContext().obtainStyledAttributes(attrs, sStyleable, 0, 0);
+
+        for (int i = 0; i < sStyleable.length; i++) {
+            switch (sStyleable[i]) {
+                case android.R.attr.minDate:
+                    mMin = a.getInt(i, 0);
+                    break;
+
+                case android.R.attr.max:
+                    mMax = a.getInt(i, 100);
+                    break;
+
+                case android.R.attr.selectable:
+                    mWrap = a.getBoolean(i, true);
+                    break;
+            }
+        }
+
+        a.recycle();
     }
 }
