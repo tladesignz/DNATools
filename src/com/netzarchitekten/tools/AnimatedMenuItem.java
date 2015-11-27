@@ -60,15 +60,15 @@ public class AnimatedMenuItem {
      *            Context used for various operations in constructor. (Reference
      *            not kept!)
      * @param menu
-     *            Menu used for various operations in constructor. (Reference
-     *            not kept!)
+     *            Menu needed to forward click during animation.
      * @param item
      *            The actual menu item to animate.
      * @param actionLayoutId
      *            The layout used for animation. This can also be set in the
      *            menu.xml file with the "android:actionLayout" attribute.
      * @param animationId
-     *            The animation used.
+     *            The animation used. OPTIONAL: Defaults to a 360°/s linear
+     *            rotating animation.
      */
     public AnimatedMenuItem(Activity activity, final Menu menu, MenuItem item,
         Integer actionLayoutId, Integer animationId) {
@@ -115,15 +115,15 @@ public class AnimatedMenuItem {
      *            Context used for various operations in constructor. (Reference
      *            not kept!)
      * @param menu
-     *            Menu used for various operations in constructor. (Reference
-     *            not kept!)
+     *            Menu needed to forward click during animation.
      * @param itemId
      *            The actual menu item to animate, provided as resource ID.
      * @param actionLayoutId
      *            The layout used for animation. This can also be set in the
      *            menu.xml file with the "android:actionLayout" attribute.
      * @param animationId
-     *            The animation used.
+     *            The animation used. OPTIONAL: Defaults to a 360°/s linear
+     *            rotating animation.
      */
     public AnimatedMenuItem(Activity activity, final Menu menu, int itemId, Integer actionLayoutId,
         Integer animationId) {
@@ -137,8 +137,7 @@ public class AnimatedMenuItem {
      *            Context used for various operations in constructor. (Reference
      *            not kept!)
      * @param menu
-     *            Menu used for various operations in constructor. (Reference
-     *            not kept!)
+     *            Menu needed to forward click during animation.
      * @param item
      *            The actual menu item to animate.
      * @param actionLayoutId
@@ -175,8 +174,7 @@ public class AnimatedMenuItem {
      *            Context used for various operations in constructor. (Reference
      *            not kept!)
      * @param menu
-     *            Menu used for various operations in constructor. (Reference
-     *            not kept!)
+     *            Menu needed to forward click during animation.
      * @param item
      *            The actual menu item to animate.
      */
@@ -191,8 +189,7 @@ public class AnimatedMenuItem {
      *            Context used for various operations in constructor. (Reference
      *            not kept!)
      * @param menu
-     *            Menu used for various operations in constructor. (Reference
-     *            not kept!)
+     *            Menu needed to forward click during animation.
      * @param itemId
      *            The actual menu item to animate, provided as resource ID.
      */
