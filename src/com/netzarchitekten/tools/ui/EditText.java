@@ -45,14 +45,26 @@ import android.util.AttributeSet;
  */
 public class EditText extends android.widget.EditText {
 
+    /**
+     * @param context
+     */
     public EditText(Context context) {
         super(context);
     }
 
+    /**
+     * @param context
+     * @param attrs
+     */
     public EditText(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
+    /**
+     * @param context
+     * @param attrs
+     * @param defStyleAttr
+     */
     public EditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
