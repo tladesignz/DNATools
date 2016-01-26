@@ -167,7 +167,7 @@ public class ViewHelper {
      * @return this object for fluency.
      */
     public ViewHelper setView(int resId) {
-        mView = mActivity.findViewById(resId);
+        mView = mActivity != null ? mActivity.findViewById(resId) : null;
 
         return this;
     }
@@ -241,7 +241,7 @@ public class ViewHelper {
      * @return this object for fluency.
      */
     public ViewHelper cloak() {
-        mView.setVisibility(View.INVISIBLE);
+        if (mView != null) mView.setVisibility(View.INVISIBLE);
 
         return this;
     }
@@ -289,7 +289,7 @@ public class ViewHelper {
      * @return this object for fluency.
      */
     public ViewHelper toggle(boolean toggle) {
-        mView.setVisibility(toggle ? View.VISIBLE : View.GONE);
+        if (mView != null) mView.setVisibility(toggle ? View.VISIBLE : View.GONE);
 
         return this;
     }
