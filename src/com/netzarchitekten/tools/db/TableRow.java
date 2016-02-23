@@ -45,7 +45,7 @@ import android.os.Parcel;
  */
 public abstract class TableRow {
 
-    protected boolean mPersisted = false;
+    protected boolean mStored = false;
 
     protected boolean mChanged = false;
 
@@ -69,7 +69,7 @@ public abstract class TableRow {
     }
 
     /**
-     * Set the context and {@link #mPersisted} to true.
+     * Set the context and {@link #mStored} to true.
      *
      * @param context
      * @param cursor
@@ -77,7 +77,7 @@ public abstract class TableRow {
     protected TableRow(Context context, Cursor cursor) {
         this(context);
 
-        mPersisted = true;
+        mStored = true;
     }
 
     /**
@@ -106,19 +106,43 @@ public abstract class TableRow {
     }
 
     /**
-     * @return true, if row is persisted and unchanged, false otherwise.
+     * <b>Stored</b> is, when there is a row in the database. It can potentially
+     * be different to the currently hold values in the object.
+     *
+     * @return true, if this row is present in the database already.
+     * @see #isSaved()
+     */
+    public boolean isStored() {
+        return mStored;
+    }
+
+    /**
+     * @return true, if this object was modified via its setters.
+     */
+    public boolean isChanged() {
+        return mChanged;
+    }
+
+    /**
+     * <b>Saved</b> is, when there is a row in the database <b>and</b> the
+     * values in the object definitely contain the same values as in the
+     * database.
+     *
+     * @return true, if row is stored and unchanged, false otherwise.
+     * @see #isStored()
+     * @see #isChanged()
      */
     public boolean isSaved() {
-        return mPersisted && !mChanged;
+        return mStored && !mChanged;
     }
 
     /**
      * <p>
      * Store object properties to database table row, if the object is not
-     * persisted, yet, or if it was changed.
+     * {@link #isSaved()}.
      * </p>
      * <p>
-     * If this object is flagged as {@link #mPersisted}, will do an UPDATE, else
+     * If this object is flagged as {@link #mStored}, will do an UPDATE, else
      * checks, if a row with the same primary key(s) value(s) exists. If not,
      * INSERTs, else also UPDATEs and <b>therefor will overwrite rows
      * silently</b>!
@@ -128,7 +152,7 @@ public abstract class TableRow {
      * {@link #setContext(Context)}after recreation from a {@link Parcel}, this
      * fails silently!
      * </p>
-     *
+     * 
      * @param uri
      *            The table URI.
      * @param values
@@ -150,10 +174,10 @@ public abstract class TableRow {
     /**
      * <p>
      * Store object properties to database table row, if the object is not
-     * persisted, yet, or if it was changed.
+     * {@link #isSaved()}.
      * </p>
      * <p>
-     * If this object is flagged as {@link #mPersisted}, will do an UPDATE, else
+     * If this object is flagged as {@link #mStored}, will do an UPDATE, else
      * checks, if a row with the same primary key(s) value(s) exists. If not,
      * INSERTs, else also UPDATEs and <b>therefore will overwrite rows
      * silently</b>!
@@ -179,8 +203,8 @@ public abstract class TableRow {
      *         make sense in that case.
      */
     protected String save(Uri uri, ContentValues values, String where, String... ids) {
-        if (mCr != null && (!mPersisted || mChanged)) {
-            if (mPersisted) {
+        if (mCr != null && (!mStored || mChanged)) {
+            if (mStored) {
                 if (mCr.update(uri, values, where, ids) > 0) {
                     mChanged = false;
                 }
@@ -190,7 +214,7 @@ public abstract class TableRow {
 
                 if (c.getCount() > 0) {
                     // This row is existing, already!
-                    mPersisted = true;
+                    mStored = true;
                     mChanged = true;
 
                     // Recall this method, do an UPDATE instead.
@@ -199,7 +223,7 @@ public abstract class TableRow {
                     Uri idUri = mCr.insert(uri, values);
 
                     if (idUri != null) {
-                        mPersisted = true;
+                        mStored = true;
                         mChanged = false;
 
                         ids[0] = idUri.toString();
@@ -234,12 +258,12 @@ public abstract class TableRow {
     protected boolean delete(Uri uri, String where, Object... ids) {
         boolean deleted = false;
 
-        if (mCr != null && mPersisted) {
+        if (mCr != null && mStored) {
             int count = mCr.delete(uri, where, toStrings(ids));
 
             deleted = count > 0;
 
-            if (deleted) mPersisted = false;
+            if (deleted) mStored = false;
         }
 
         return deleted;
