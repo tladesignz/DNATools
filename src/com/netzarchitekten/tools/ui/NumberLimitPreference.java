@@ -115,7 +115,7 @@ public class NumberLimitPreference extends EditTextPreference implements OnClick
 
     /**
      * Remove the positive button {@link DialogInterface.OnClickListener}, to
-     * stope the dialog closing automatically.
+     * stop the dialog closing automatically.
      */
     @Override
     protected void onPrepareDialogBuilder(AlertDialog.Builder builder) {
@@ -135,7 +135,7 @@ public class NumberLimitPreference extends EditTextPreference implements OnClick
             value = Double.valueOf(getEditText().getText().toString());
         } catch (Exception e) {
             // Trigger an error message further down.
-            value = -1.0;
+            value = (double) (mMin - 1);
         }
 
         if (value != null && (value < mMin || value > mMax)) {
