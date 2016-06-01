@@ -27,6 +27,8 @@ package com.netzarchitekten.tools.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
+import android.view.View;
 
 /**
  * <p>
@@ -44,6 +46,28 @@ import android.util.AttributeSet;
  *      GitHub: delight-im/Android-BaseLib</a>
  */
 public class EditText extends android.widget.EditText {
+
+    /**
+     * Interface definition for a callback to be invoked when a key is pressed
+     * on the soft keyboard or the Android buttons and before anything else
+     * handles it.
+     */
+    public interface OnKeyPreImeListener {
+
+        /**
+         * Called when the focus state of a key was pressed.
+         *
+         * @param v
+         *            The view where the key was pressed.
+         * @param event
+         *            Description of the key event.
+         * @return If you handled the event, return true. If you want to allow
+         *         the event to be handled by the next receiver, return false.
+         */
+        public boolean onKeyPreIme(View v, KeyEvent event);
+    }
+
+    protected OnKeyPreImeListener mOnKeyPreImeListener;
 
     /**
      * @param context
@@ -76,12 +100,35 @@ public class EditText extends android.widget.EditText {
      * @return this object for fluency.
      */
     public EditText setReadOnly(boolean readOnly) {
-        this.setFocusable(!readOnly);
-        this.setFocusableInTouchMode(!readOnly);
-        this.setClickable(!readOnly);
-        this.setLongClickable(!readOnly);
-        this.setCursorVisible(!readOnly);
+        setFocusable(!readOnly);
+        setFocusableInTouchMode(!readOnly);
+        setClickable(!readOnly);
+        setLongClickable(!readOnly);
+        setCursorVisible(!readOnly);
 
         return this;
+    }
+
+    /**
+     * Call a {@link OnKeyPreImeListener}, if connected.
+     */
+    @Override
+    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+        if (mOnKeyPreImeListener != null) {
+            if (mOnKeyPreImeListener.onKeyPreIme(this, event)) return true;
+        }
+
+        return super.onKeyPreIme(keyCode, event);
+    }
+
+    /**
+     * Register a callback to be invoked when a key is pressed on the soft
+     * keyboard or the Android buttons and before anything else handles it.
+     *
+     * @param l
+     *            The callback that will run.
+     */
+    public void setOnKeyPreImeListener(OnKeyPreImeListener l) {
+        mOnKeyPreImeListener = l;
     }
 }
