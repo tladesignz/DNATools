@@ -3,6 +3,13 @@
 .project
 .settings
 
+# Android Studio
+.gradle/
+.idea/
+build/
+*.iml
+local.properties
+
 # MacOS
 .DS_Store
 
