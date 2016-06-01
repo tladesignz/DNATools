@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.netzarchitekten.tools"
-    android:versionCode="13"
-    android:versionName="4.0.1" >
+    android:versionCode="14"
+    android:versionName="4.1.0" >
 
     <uses-sdk
         android:minSdkVersion="11"
