@@ -92,6 +92,7 @@ public abstract class Table {
      * Creates this table in the latest version.
      *
      * @param db
+     *              The database.
      */
     public static void onCreate(SQLiteDatabase db) {
         throw new RuntimeException("Missing implementation!");
@@ -101,8 +102,11 @@ public abstract class Table {
      * Upgrades this table to newVersion.
      *
      * @param db
+     *              The database.
      * @param oldVersion
+     *              The old database version.
      * @param newVersion
+     *              The new database version.
      */
     public static void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         throw new RuntimeException("Missing implementation!");
@@ -112,6 +116,7 @@ public abstract class Table {
      * Instantiate table model for CRUD operations.
      *
      * @param context
+     *              A {@link Context}.
      */
     public Table(Context context) {
         mContext = context.getApplicationContext();

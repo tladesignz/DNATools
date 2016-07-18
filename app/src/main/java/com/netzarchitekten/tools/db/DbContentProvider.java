@@ -83,7 +83,7 @@ public abstract class DbContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        mCr = getContext().getContentResolver();
+        mCr = getContext() != null ? getContext().getContentResolver() : null;
 
         mHelper = getHelper();
 
@@ -101,6 +101,7 @@ public abstract class DbContentProvider extends ContentProvider {
      * Implement your URI-to-table-model matching here.
      *
      * @param uri
+     *            The table URI.
      * @return a table matching this URI or NULL.
      */
     protected abstract Class<? extends Table> getTable(Uri uri);
@@ -223,7 +224,8 @@ public abstract class DbContentProvider extends ContentProvider {
      * given URI.
      *
      * @param uri
-     * @return
+     *            The table URI.
+     * @return the table name (first element) and notification URI (second element of array).
      */
     private String[] getArgs(Uri uri) {
         Class<? extends Table> table = getTable(uri);
@@ -237,11 +239,7 @@ public abstract class DbContentProvider extends ContentProvider {
         try {
             name = table.getField("NAME").get(null);
             notificationUri = table.getField("URI").get(null);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
+        } catch (IllegalAccessException|IllegalArgumentException|NoSuchFieldException e) {
             e.printStackTrace();
         }
 

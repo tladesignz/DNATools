@@ -26,6 +26,7 @@
 package com.netzarchitekten.tools.ui;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -83,7 +84,10 @@ public class NumberLimitPreference extends EditTextPreference implements OnClick
 
     /**
      * @param context
+     *              The Context this is associated with, through which it can access the current
+     *              theme, resources, SharedPreferences, etc.
      * @param attrs
+     *              The attributes of the XML tag that is inflating the preference.
      */
     public NumberLimitPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -93,8 +97,13 @@ public class NumberLimitPreference extends EditTextPreference implements OnClick
 
     /**
      * @param context
+     *              The Context this is associated with, through which it can access the current
+     *              theme, resources, SharedPreferences, etc.
      * @param attrs
+     *              The attributes of the XML tag that is inflating the preference.
      * @param defStyleAttr
+     *              An attribute in the current theme that contains a reference to a style resource
+     *              that supplies default values for the view. Can be 0 to not look for defaults.
      */
     public NumberLimitPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -129,7 +138,7 @@ public class NumberLimitPreference extends EditTextPreference implements OnClick
      */
     @Override
     public void onClick(View v) {
-        Double value = null;
+        Double value;
 
         try {
             value = Double.valueOf(getEditText().getText().toString());
@@ -141,7 +150,8 @@ public class NumberLimitPreference extends EditTextPreference implements OnClick
         if (value != null && (value < mMin || value > mMax)) {
             getEditText().requestFocus();
             getEditText().setError(mErrorText == null
-                ? String.format("Value needs to be between %d and %d!", mMin, mMax) : mErrorText);
+                ? String.format(Locale.getDefault(), "Value needs to be between %d and %d!", mMin, mMax)
+                : mErrorText);
             return;
         }
 
@@ -154,6 +164,7 @@ public class NumberLimitPreference extends EditTextPreference implements OnClick
      * Apply the given attributes to this preference.
      *
      * @param attrs
+     *              The attributes of the XML tag that is inflating the preference.
      */
     private void applyAttributes(AttributeSet attrs) {
         TypedArray a = getContext().obtainStyledAttributes(attrs, sStyleable, 0, 0);

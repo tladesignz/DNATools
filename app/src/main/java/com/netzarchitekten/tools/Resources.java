@@ -65,7 +65,7 @@ public class Resources {
      *            tool. This integer encodes the package, type, and resource
      *            entry. The value 0 is an invalid identifier.
      * @return a single color value in the form 0xAARRGGBB.
-     * @see Resources#getColor(int, android.content.res.Resources.Theme)
+     * @see android.content.res.Resources#getColor(int, android.content.res.Resources.Theme)
      */
     @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")

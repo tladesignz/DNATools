@@ -64,13 +64,15 @@ public class EditText extends android.widget.EditText {
          * @return If you handled the event, return true. If you want to allow
          *         the event to be handled by the next receiver, return false.
          */
-        public boolean onKeyPreIme(View v, KeyEvent event);
+        boolean onKeyPreIme(View v, KeyEvent event);
     }
 
     protected OnKeyPreImeListener mOnKeyPreImeListener;
 
     /**
      * @param context
+     *              The Context this is associated with, through which it can access the current
+     *              theme, resources, SharedPreferences, etc.
      */
     public EditText(Context context) {
         super(context);
@@ -78,7 +80,10 @@ public class EditText extends android.widget.EditText {
 
     /**
      * @param context
+     *              The Context this is associated with, through which it can access the current
+     *              theme, resources, SharedPreferences, etc.
      * @param attrs
+     *              The attributes of the XML tag that is inflating the preference.
      */
     public EditText(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -86,8 +91,13 @@ public class EditText extends android.widget.EditText {
 
     /**
      * @param context
+     *              The Context this is associated with, through which it can access the current
+     *              theme, resources, SharedPreferences, etc.
      * @param attrs
+     *              The attributes of the XML tag that is inflating the preference.
      * @param defStyleAttr
+     *              An attribute in the current theme that contains a reference to a style resource
+     *              that supplies default values for the view. Can be 0 to not look for defaults.
      */
     public EditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -97,6 +107,7 @@ public class EditText extends android.widget.EditText {
      * Set an EditText read-only if true.
      *
      * @param readOnly
+     *              true, if read-only, false if writable.
      * @return this object for fluency.
      */
     public EditText setReadOnly(boolean readOnly) {

@@ -57,7 +57,7 @@ public class ListAdapterHelper {
 
     public final SimpleAdapter adapter;
 
-    public final List<HashMap<String, String>> data = new ArrayList<HashMap<String, String>>();
+    public final List<HashMap<String, String>> data = new ArrayList<>();
 
     private final Context mContext;
 
@@ -74,9 +74,10 @@ public class ListAdapterHelper {
      * given using the keys from the constructor.
      *
      * @param strings
+     *              Texts to add.
      */
     public void add(String... strings) {
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         int i = 0;
 
         for (String string : strings) {
@@ -95,14 +96,11 @@ public class ListAdapterHelper {
      *            resource IDs
      */
     public void add(int... resIds) {
-        String[] strings = {};
-        List<String> newStrings = new ArrayList<String>();
+        String[] strings = new String[resIds.length];
 
         for (int i = 0; i < resIds.length; i++) {
-            newStrings.add(mContext.getString(resIds[i]));
+            strings[i] = mContext.getString(resIds[i]);
         }
-
-        strings = newStrings.toArray(strings);
 
         add(strings);
     }
@@ -117,17 +115,12 @@ public class ListAdapterHelper {
      *            more strings
      */
     public void add(int resId, String... strings) {
-        List<String> newStrings = new ArrayList<String>();
+        String[] newStrings = new String[strings.length + 1];
+        newStrings[0] = mContext.getString(resId);
 
-        newStrings.add(mContext.getString(resId));
+        System.arraycopy(strings, 0, newStrings, 1, strings.length);
 
-        for (int i = 0; i < strings.length; i++) {
-            newStrings.add(strings[i]);
-        }
-
-        strings = newStrings.toArray(strings);
-
-        add(strings);
+        add(newStrings);
     }
 
     /**
@@ -149,7 +142,8 @@ public class ListAdapterHelper {
      *
      * @see AdapterView.OnItemClickListener#onItemClick
      * @param position
-     * @return
+     *              Position of the item whose data we want within the adapter's data set.
+     * @return the data at the specified position.
      */
     @SuppressWarnings("unchecked")
     public Map<String, String> getItem(int position) {

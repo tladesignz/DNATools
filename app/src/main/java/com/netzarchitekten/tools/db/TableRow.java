@@ -39,7 +39,7 @@ import android.os.Parcel;
  * Abstract model for table rows, implements some commonly used stuff, like
  * handling the reference to {@link Context} and {@link ContentResolver} and
  * handling the decision if INSERTs or UPDATEs are in order on
- * {@link #save(Uri, Integer, ContentValues, String, String...)}.
+ * {@link #save()}.
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
@@ -63,6 +63,7 @@ public abstract class TableRow {
      * Set the context.
      *
      * @param context
+     *              A {@link Context}.
      */
     protected TableRow(Context context) {
         setContext(context);
@@ -72,7 +73,9 @@ public abstract class TableRow {
      * Set the context and {@link #mStored} to true.
      *
      * @param context
+     *              A {@link Context}.
      * @param cursor
+     *              A {@link Cursor} pointing to this row's data in the database.
      */
     protected TableRow(Context context, Cursor cursor) {
         this(context);
@@ -85,6 +88,7 @@ public abstract class TableRow {
      * because we can't store the context in the parcel.
      *
      * @param context
+     *              A {@link Context}.
      * @return this object for fluency.
      */
     public TableRow setContext(Context context) {
@@ -212,7 +216,7 @@ public abstract class TableRow {
                 // Check, if we can find this row already.
                 Cursor c = mCr.query(uri, null, where, ids, null);
 
-                if (c.getCount() > 0) {
+                if (c != null && c.getCount() > 0) {
                     // This row is existing, already!
                     mStored = true;
                     mChanged = true;
@@ -229,6 +233,8 @@ public abstract class TableRow {
                         ids[0] = idUri.toString();
                     }
                 }
+
+                if (c!= null) c.close();
             }
         }
 
@@ -239,7 +245,7 @@ public abstract class TableRow {
      * Store object to database.
      *
      * @return this object for fluency.
-     * @see #save(android.net.Uri, Integer, ContentValues, String, String...)
+     * @see #save(Uri, ContentValues, String, String...)
      */
     public abstract TableRow save();
 
@@ -300,7 +306,7 @@ public abstract class TableRow {
     protected static boolean getBoolean(Cursor c, String column) {
         int idx = getIndex(c, column);
 
-        return idx < 0 ? false : c.getInt(idx) != 0;
+        return idx >= 0 && c.getInt(idx) != 0;
     }
 
     /**
@@ -551,7 +557,9 @@ public abstract class TableRow {
      * {@link Cursor#isNull(int)}.
      *
      * @param c
+     *              A {@link Cursor}.
      * @param column
+     *              The name of the target column.
      * @return -1 if column inexistent or it's value is NULL. The column index
      *         otherwise.
      * @see Cursor#getColumnIndex(String)

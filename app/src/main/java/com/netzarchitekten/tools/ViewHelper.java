@@ -211,7 +211,7 @@ public class ViewHelper {
     /**
      * Sets a {@link View} invisible.
      *
-     * @param vp
+     * @param v
      *            A {@link View} to cloak.
      */
     public static void cloak(View v) {

@@ -97,7 +97,10 @@ public class NumberPickerPreference extends DialogPreference {
 
     /**
      * @param context
+     *              The Context this is associated with, through which it can access the current
+     *              theme, resources, SharedPreferences, etc.
      * @param attrs
+     *              The attributes of the XML tag that is inflating the preference.
      */
     public NumberPickerPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -107,8 +110,13 @@ public class NumberPickerPreference extends DialogPreference {
 
     /**
      * @param context
+     *              The Context this is associated with, through which it can access the current
+     *              theme, resources, SharedPreferences, etc.
      * @param attrs
+     *              The attributes of the XML tag that is inflating the preference.
      * @param defStyleAttr
+     *              An attribute in the current theme that contains a reference to a style resource
+     *              that supplies default values for the view. Can be 0 to not look for defaults.
      */
     public NumberPickerPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -167,6 +175,7 @@ public class NumberPickerPreference extends DialogPreference {
      * Set the value of this preference directly.
      *
      * @param value
+     *              The value.
      * @return this object for fluency.
      */
     public NumberPickerPreference setValue(int value) {
@@ -194,6 +203,7 @@ public class NumberPickerPreference extends DialogPreference {
      * Set the minimally selectable value.
      *
      * @param min
+     *              The minimum selectable value.
      * @return this object for fluency.
      */
     public NumberPickerPreference setMin(int min) {
@@ -217,6 +227,7 @@ public class NumberPickerPreference extends DialogPreference {
      * Set the maximally selectable value.
      *
      * @param max
+     *              The maximally selectable value.
      * @return this object for fluency.
      */
     public NumberPickerPreference setMax(int max) {
@@ -240,6 +251,7 @@ public class NumberPickerPreference extends DialogPreference {
      * Set the wrap mode of the selector wheel.
      *
      * @param wrap
+     *              true, if wrap should be allowed.
      * @return this object for fluency.
      */
     public NumberPickerPreference setWrap(boolean wrap) {
@@ -256,6 +268,7 @@ public class NumberPickerPreference extends DialogPreference {
      * Apply the given attributes to this preference.
      *
      * @param attrs
+     *              The attributes of the XML tag that is inflating the preference.
      */
     private void applyAttributes(AttributeSet attrs) {
         TypedArray a = getContext().obtainStyledAttributes(attrs, sStyleable, 0, 0);
