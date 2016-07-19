@@ -44,6 +44,7 @@ import android.widget.NumberPicker;
  * </p>
  * <p>
  * The picker is configurable using the following attributes:
+ * </p>
  * <ul>
  * <li><i>android:minDate="&lt;integer&gt;"</i>: Set the minimum value, the
  * picker allows. (DEFAULT 0)</li>
@@ -53,7 +54,6 @@ import android.widget.NumberPicker;
  * picker: <i>true</i> (DEFAULT): picker wraps around, <i>false</i>: picker
  * doesn't wrap around.</li>
  * </ul>
- * </p>
  * <p>
  * The re-/mis-use of the android attributes is done, in order to avoid needing
  * to declare own attributes which you would need to do in your own project.

@@ -45,6 +45,7 @@ import android.widget.EditText;
  * </p>
  * <p>
  * The preference is configurable using the following attributes:
+ * </p>
  * <ul>
  * <li><i>android:minDate="&lt;integer&gt;"</i>: Set the minimum value, the
  * preference allows. (DEFAULT 0)</li>
@@ -54,7 +55,6 @@ import android.widget.EditText;
  * is not in the range. (DEFAULT: non-localized, non-specific error message)
  * </li>
  * </ul>
- * </p>
  * <p>
  * The re-/mis-use of the android attributes is done, in order to avoid needing
  * to declare own attributes which you would need to do in your own project.

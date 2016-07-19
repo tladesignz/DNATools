@@ -275,6 +275,8 @@ public class ViewHelper {
 
     /**
      * Shows the current {@link View}.
+     *
+     * @return this object for fluency.
      */
     public ViewHelper show() {
         return toggle(true);
@@ -285,7 +287,7 @@ public class ViewHelper {
      * parameter.
      *
      * @param toggle
-     *            true => show, false => hide
+     *            Show if true, hide if false.
      * @return this object for fluency.
      */
     public ViewHelper toggle(boolean toggle) {
@@ -300,7 +302,7 @@ public class ViewHelper {
      * @param v
      *            A {@link View} to show or hide.
      * @param toggle
-     *            true => show, false => hide
+     *            Show if true, hide if false.
      */
     public static void toggle(View v, boolean toggle) {
         new ViewHelper(v).toggle(toggle);
@@ -319,7 +321,7 @@ public class ViewHelper {
      * @param vp
      *            A {@link ViewParent} to show or hide.
      * @param toggle
-     *            true => show, false => hide
+     *            Show if true, hide if false.
      */
     public static void toggle(ViewParent vp, boolean toggle) {
         new ViewHelper(vp).toggle(toggle);

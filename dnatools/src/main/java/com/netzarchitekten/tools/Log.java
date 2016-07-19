@@ -37,7 +37,7 @@ import android.text.TextUtils;
  * <li>Allows consuming apps to control, which log levels are actually printed.
  * </li>
  * <li>Doesn't print anything in {@link #VERBOSE} and {@link #DEBUG} if
- * {@link BuildConfig#DEBUG} is not true, meaning app is not in development
+ * {@code BuildConfig#DEBUG} is not true, meaning app is not in development
  * mode.</li>
  * <li>Log tag is automatically generated like this
  * "com.example.CallingClass#callingMethod#123".</li>

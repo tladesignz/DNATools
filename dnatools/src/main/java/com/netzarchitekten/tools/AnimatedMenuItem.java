@@ -44,8 +44,8 @@ import android.view.animation.RotateAnimation;
  *      "http://stackoverflow.com/questions/9731602/animated-icon-for-actionitem">
  *      Stack Overflow: Animated Icon for ActionItem</a>
  * @see <a href=
- *      "http://stackoverflow.com/questions/19139775/animated-menu-item-jumps-
- *      when-animation-starts">Stack Overflow: Animated menu item “jumps” when
+ *      "http://stackoverflow.com/questions/19139775/animated-menu-item-jumps-when-animation-starts"
+ *      >Stack Overflow: Animated menu item “jumps” when
  *      animation starts</a>
  */
 public class AnimatedMenuItem {

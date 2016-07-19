@@ -39,13 +39,12 @@ import java.io.OutputStream;
  * </p>
  *
  * <pre>
- * {@code
  * InputStream is = null;
  * OutputStream os = null;
  *
  * try {
- *      is = <...>
- *      os = <...>
+ *      is = ...
+ *      os = ...
  *
  *      FileUtils.copy(is, os);
  * } catch (IOException e) {
