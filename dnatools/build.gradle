@@ -32,7 +32,7 @@ ext {
     siteUrl = 'https://github.com/tladesignz/DNATools'
     gitUrl = 'https://github.com/tladesignz/DNATools.git'
 
-    libraryVersion = '4.1.1'
+    libraryVersion = '4.1.2'
 
     developerId = 'berhart'
     developerName = 'Benjamin Erhart'
