@@ -19,5 +19,32 @@ android {
     }
 }
 
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'tools'
+
+    publishedGroupId = 'com.netzarchitekten'
+    libraryName = 'DNATools'
+    artifact = 'tools'
+
+    libraryDescription = 'A toolbox for various small Android solutions.'
+
+    siteUrl = 'https://github.com/tladesignz/DNATools'
+    gitUrl = 'https://github.com/tladesignz/DNATools.git'
+
+    libraryVersion = '4.1.1'
+
+    developerId = 'berhart'
+    developerName = 'Benjamin Erhart'
+    developerEmail = 'berhart@netzarchitekten.com'
+
+    licenseName = 'The MIT License (MIT)'
+    licenseUrl = 'https://opensource.org/licenses/MIT'
+    allLicenses = ["MIT"]
+}
+
 dependencies {
 }
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
