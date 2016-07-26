@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Die Netzarchitekten e.U., Benjamin Erhart
+ * Copyright (c) 2015 - 2016 Die Netzarchitekten e.U., Benjamin Erhart
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,6 @@
  */
 package com.netzarchitekten.tools.db;
 
-import java.net.URI;
-
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -34,6 +32,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+
+import java.net.URI;
 
 /**
  * Base class for SQLite database content providers.
@@ -43,25 +43,9 @@ import android.net.Uri;
 public abstract class DbContentProvider extends ContentProvider {
 
     /**
-     * <p>
-     * The content provider's full qualified name.
-     * </p>
-     * <p>
-     * Override this constant in your implementation!
-     * </p>
+     * Pseudo-table which allows raw SELECT queries.
      */
-    private static final String AUTHORITY = null;
-
-    /**
-     * <p>
-     * The URI to use in queries.
-     * </p>
-     * <p>
-     * Override this constant in your implementation with the same
-     * implementation, otherwise this won't work!
-     * </p>
-     */
-    public static final String URI = "content://" + AUTHORITY + "/";
+    protected static final int RAW_QUERY = Integer.MAX_VALUE;
 
     /**
      * A reference to the {@link ContentResolver}.
@@ -73,13 +57,6 @@ public abstract class DbContentProvider extends ContentProvider {
      * {@link #getHelper()}.
      */
     protected SQLiteOpenHelper mHelper;
-
-    /**
-     * A reference to the actual {@link SQLiteDatabase}. This will always be a
-     * writable reference and will only be fetched once. (But lazily on first
-     * real DB access.)
-     */
-    protected SQLiteDatabase mDb;
 
     @Override
     public boolean onCreate() {
@@ -96,15 +73,6 @@ public abstract class DbContentProvider extends ContentProvider {
      * @return an instance of your SQLiteOpenHelper.
      */
     protected abstract SQLiteOpenHelper getHelper();
-
-    /**
-     * Implement your URI-to-table-model matching here.
-     *
-     * @param uri
-     *            The table URI.
-     * @return a table matching this URI or NULL.
-     */
-    protected abstract Class<? extends Table> getTable(Uri uri);
 
     @Override
     public String getType(Uri uri) {
@@ -133,17 +101,21 @@ public abstract class DbContentProvider extends ContentProvider {
      */
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
-        String sortOrder) {
-        if (mDb == null) mDb = mHelper.getWritableDatabase();
+                        String sortOrder) {
+        String table = uri.getLastPathSegment();
 
-        String[] args = getArgs(uri);
+        Cursor c;
 
-        Cursor c = mDb.query(args[0], projection, selection, selectionArgs, null, null, sortOrder);
-        c.setNotificationUri(mCr, Uri.parse(args[1]));
+        if (Data.RAW_QUERY.equals(table)) {
+            c = getDb().rawQuery(selection, selectionArgs);
+        } else {
+            c = getDb().query(table, projection, selection, selectionArgs,
+                    null, null, sortOrder);
+            c.setNotificationUri(mCr, uri);
+        }
 
         return c;
     }
-
     /**
      * <p>
      * INSERT a table row.
@@ -164,12 +136,14 @@ public abstract class DbContentProvider extends ContentProvider {
      */
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        if (mDb == null) mDb = mHelper.getWritableDatabase();
+        String table = uri.getLastPathSegment();
 
-        String[] args = getArgs(uri);
+        if (Data.RAW_QUERY.equals(table)) {
+            throw new IllegalArgumentException("Inserts only on allowed on Table models.");
+        }
 
-        long id = mDb.insert(args[0], null, values);
-        mCr.notifyChange(Uri.parse(args[1]), null);
+        long id = getDb().insert(table, null, values);
+        mCr.notifyChange(uri, null);
 
         return Uri.parse(String.valueOf(id));
     }
@@ -188,12 +162,14 @@ public abstract class DbContentProvider extends ContentProvider {
      */
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        if (mDb == null) mDb = mHelper.getWritableDatabase();
+        String table = uri.getLastPathSegment();
 
-        String[] args = getArgs(uri);
+        if (Data.RAW_QUERY.equals(table)) {
+            throw new IllegalArgumentException("Updates only on allowed on Table models.");
+        }
 
-        int rows = mDb.update(args[0], values, selection, selectionArgs);
-        mCr.notifyChange(Uri.parse(args[1]), null);
+        int rows = getDb().update(table, values, selection, selectionArgs);
+        mCr.notifyChange(uri, null);
 
         return rows;
     }
@@ -209,45 +185,29 @@ public abstract class DbContentProvider extends ContentProvider {
      */
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        if (mDb == null) mDb = mHelper.getWritableDatabase();
+        String table = uri.getLastPathSegment();
 
-        String[] args = getArgs(uri);
+        if (Data.RAW_QUERY.equals(table)) {
+            throw new IllegalArgumentException("Delete only on allowed on Table models.");
+        }
 
-        int rows = mDb.delete(args[0], selection, selectionArgs);
-        mCr.notifyChange(Uri.parse(args[1]), null);
+        int rows = getDb().delete(table, selection, selectionArgs);
+        mCr.notifyChange(uri, null);
 
         return rows;
     }
 
     /**
-     * Fetches the table name and the notification URI of a table matching a
-     * given URI.
+     * Ensures, a database, which has to be initialized prior use (e.g. copied from assets),
+     * is initialized and returns the handle to it.
      *
-     * @param uri
-     *            The table URI.
-     * @return the table name (first element) and notification URI (second element of array).
+     * @return the handle to the database.
      */
-    private String[] getArgs(Uri uri) {
-        Class<? extends Table> table = getTable(uri);
-
-        if (table == null)
-            throw new IllegalArgumentException(String.format("Unknown URI: \"%s\"", uri));
-
-        Object name = null;
-        Object notificationUri = null;
-
-        try {
-            name = table.getField("NAME").get(null);
-            notificationUri = table.getField("URI").get(null);
-        } catch (IllegalAccessException|IllegalArgumentException|NoSuchFieldException e) {
-            e.printStackTrace();
+    protected SQLiteDatabase getDb() {
+        if (mHelper instanceof SQLitePreloadHelper && ((SQLitePreloadHelper)mHelper).needsInit()) {
+            ((SQLitePreloadHelper)mHelper).init();
         }
 
-        if (name == null
-            || notificationUri == null) { throw new IllegalArgumentException(String.format(
-                "The class \"%s\" must contain the static field \"%s\" pointing to a valid object instance!",
-                table.getCanonicalName(), name == null ? "NAME" : "URI")); }
-
-        return new String[] { name.toString(), notificationUri.toString() };
+        return mHelper.getWritableDatabase();
     }
 }

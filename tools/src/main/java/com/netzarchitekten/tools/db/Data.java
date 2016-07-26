@@ -25,9 +25,9 @@
  */
 package com.netzarchitekten.tools.db;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import java.lang.reflect.Constructor;
@@ -36,65 +36,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Base class for SQLite database table models.
+ * Base class for SQLite database models.
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
-public abstract class Table<T extends TableRow> extends Data {
-
-    protected final Uri mUri;
-
-    protected final Class<T> mTableRowClass;
+public abstract class Data {
 
     /**
-     * Creates this table in the latest version.
-     *
-     * @param db
-     *              The database.
+     * Identifier indicating a raw query, does not necessarily produce a complete table row.
      */
-    public static void onCreate(SQLiteDatabase db) {
-        throw new RuntimeException("Missing implementation!");
+    public static final String RAW_QUERY = "_raw_query_";
+
+    protected final Context mContext;
+    protected final ContentResolver mCr;
+
+    protected final Uri mRawUri;
+
+    public Data(Context context, String baseUri) {
+        mContext = context.getApplicationContext();
+        mCr = mContext.getContentResolver();
+        mRawUri = Uri.parse(baseUri + RAW_QUERY);
     }
 
     /**
-     * Upgrades this table to newVersion.
-     *
-     * @param db
-     *              The database.
-     * @param oldVersion
-     *              The old database version.
-     * @param newVersion
-     *              The new database version.
-     */
-    public static void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        throw new RuntimeException("Missing implementation!");
-    }
-
-    /**
-     * Instantiate table model for CRUD operations.
-     *
-     * @param tableRowClass
-     *              The class of the {@link TableRow}. Needs to be explicitly given here, because
-     *              at runtime this information is sometimes lost, otherwise.
-     * @param context
-     *              A {@link Context}.
-     * @param baseUri
-     *              The base URI like this: "content://com.example.app.db.contentprovider/"
-     * @param name
-     *              The table name.
-     * @see <a href="http://stackoverflow.com/questions/3403909/get-generic-type-of-class-at-runtime"
-     * >Stackoverflow</a>
-     */
-    public Table(Class<T> tableRowClass, Context context, String baseUri, String name) {
-        super(context, baseUri);
-
-        mUri = Uri.parse(baseUri + name);
-
-        mTableRowClass = tableRowClass;
-    }
-
-    /**
-     * Fetch the selected rows ordered by the given order with limit.
+     * Execute a raw query.
      *
      * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
      *                  (excluding the WHERE itself).
@@ -102,25 +67,37 @@ public abstract class Table<T extends TableRow> extends Data {
      * @param selectionArgs You may include ?s in selection, which will be replaced by the values
      *                      from selectionArgs, in the order that they appear in the selection.
      *                      The values will be bound as Strings.
-     * @param sortOrder How to order the rows, formatted as an SQL ORDER BY clause (excluding the
-     *                  ORDER BY itself). Passing null will use the default sort order,
-     *                  which may be unordered.
+     * @return a {@link Cursor} pointing to the result set.
+     */
+    public Cursor rawQuery(String selection, String[] selectionArgs) {
+        return mCr.query(mRawUri, null, selection, selectionArgs, null);
+    }
+
+    /**
+     * Execute a raw query.
+     *
+     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
+     *                  (excluding the WHERE itself).
+     *                  Passing null will return all rows for the given URI.
+     * @param selectionArgs You may include ?s in selection, which will be replaced by the values
+     *                      from selectionArgs, in the order that they appear in the selection.
+     *                      The values will be bound as Strings.
      * @param limit A maximum amount of result entries.
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
-    protected List<T> getList(String selection, String[] selectionArgs, String sortOrder,
-                              Integer limit) {
+    public <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, String selection,
+                                                String[] selectionArgs, Integer limit) {
 
         List<T> rows = new ArrayList<>();
 
         try {
-            Cursor c = mCr.query(mUri, null, selection, selectionArgs, sortOrder);
+            Cursor c = rawQuery(selection, selectionArgs);
 
             if (c != null) {
                 if (c.moveToFirst()) {
                     int i = 0;
                     Constructor<T> constructor =
-                            mTableRowClass.getConstructor(Context.class, Cursor.class);
+                            tableRowClass.getConstructor(Context.class, Cursor.class);
 
                     do {
                         rows.add(constructor.newInstance(mContext, c));
@@ -154,26 +131,7 @@ public abstract class Table<T extends TableRow> extends Data {
     }
 
     /**
-     * Fetch all selected rows ordered by the given order.
-     *
-     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
-     *                  (excluding the WHERE itself).
-     *                  Passing null will return all rows for the given URI.
-     * @param selectionArgs You may include ?s in selection, which will be replaced by the values
-     *                      from selectionArgs, in the order that they appear in the selection.
-     *                      The values will be bound as Strings.
-     * @param sortOrder How to order the rows, formatted as an SQL ORDER BY clause (excluding the
-     *                  ORDER BY itself). Passing null will use the default sort order,
-     *                  which may be unordered.
-     * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
-     */
-    protected List<T> getList(String selection, String[] selectionArgs,
-                              String sortOrder) {
-        return getList(selection, selectionArgs, sortOrder, null);
-    }
-
-    /**
-     * Fetch the selected rows unordered and unlimited.
+     * Fetch the selected rows, unordered and unlimited.
      *
      * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
      *                  (excluding the WHERE itself).
@@ -183,8 +141,8 @@ public abstract class Table<T extends TableRow> extends Data {
      *                      The values will be bound as Strings.
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
-    protected List<T> getList(String selection, String[] selectionArgs) {
-        return getList(selection, selectionArgs, null);
+    public <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, String selection, String[] selectionArgs) {
+        return getRawList(tableRowClass, selection, selectionArgs, null);
     }
 
     /**
@@ -193,19 +151,10 @@ public abstract class Table<T extends TableRow> extends Data {
      * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
      *                  (excluding the WHERE itself).
      *                  Passing null will return all rows for the given URI.
-     * @return a list of {@link TableRow}s, possibly empty, never null.
-     */
-    protected List<T> getList(String selection) {
-        return getList(selection, null);
-    }
-
-    /**
-     * Fetch all rows in the table, unordered.
-     *
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
-    protected List<T> getList() {
-        return getList(null);
+    public <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, String selection) {
+        return getRawList(tableRowClass, selection, null);
     }
 
     /**
@@ -217,13 +166,10 @@ public abstract class Table<T extends TableRow> extends Data {
      * @param selectionArgs You may include ?s in selection, which will be replaced by the values
      *                      from selectionArgs, in the order that they appear in the selection.
      *                      The values will be bound as Strings.
-     * @param sortOrder How to order the rows, formatted as an SQL ORDER BY clause (excluding the
-     *                  ORDER BY itself). Passing null will use the default sort order,
-     *                  which may be unordered.
      * @return a {@link TableRow}, possibly null.
      */
-    protected T get(String selection, String[] selectionArgs, String sortOrder) {
-        List<T> rows = getList(selection, selectionArgs, sortOrder, 1);
+    public <T extends TableRow> T getRaw(Class<T> tableRowClass, String selection, String[] selectionArgs) {
+        List<T> rows = getRawList(tableRowClass, selection, selectionArgs, 1);
 
         return rows != null && rows.size() > 0 ? rows.get(0) : null;
     }
@@ -234,33 +180,9 @@ public abstract class Table<T extends TableRow> extends Data {
      * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
      *                  (excluding the WHERE itself).
      *                  Passing null will return all rows for the given URI.
-     * @param selectionArgs You may include ?s in selection, which will be replaced by the values
-     *                      from selectionArgs, in the order that they appear in the selection.
-     *                      The values will be bound as Strings.
      * @return a {@link TableRow}, possibly null.
      */
-    protected T get(String selection, String[] selectionArgs) {
-        return get(selection, selectionArgs, null);
-    }
-
-    /**
-     * Fetch the selected row.
-     *
-     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
-     *                  (excluding the WHERE itself).
-     *                  Passing null will return all rows for the given URI.
-     * @return a {@link TableRow}, possibly null.
-     */
-    protected T get(String selection) {
-        return get(selection, null);
-    }
-
-    /**
-     * Fetch a random row.
-     *
-     * @return a {@link TableRow}, possibly null.
-     */
-    protected T get() {
-        return get(null);
+    public <T extends TableRow> T getRaw(Class<T> tableRowClass, String selection) {
+        return getRaw(tableRowClass, selection, null);
     }
 }

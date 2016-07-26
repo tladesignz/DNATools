@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Die Netzarchitekten e.U., Benjamin Erhart
+ * Copyright (c) 2015 - 2016 Die Netzarchitekten e.U., Benjamin Erhart
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -303,7 +303,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getInt(int)
      */
-    protected static boolean getBoolean(Cursor c, String column) {
+    public static boolean getBoolean(Cursor c, String column) {
         int idx = getIndex(c, column);
 
         return idx >= 0 && c.getInt(idx) != 0;
@@ -327,7 +327,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getInt(int)
      */
-    protected static int getInt(Cursor c, String column) {
+    public static int getInt(Cursor c, String column) {
         int idx = getIndex(c, column);
 
         return idx < 0 ? 0 : c.getInt(idx);
@@ -351,7 +351,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getInt(int)
      */
-    protected static Integer getIntObject(Cursor c, String column) {
+    public static Integer getIntObj(Cursor c, String column) {
         int idx = getIndex(c, column);
 
         return idx < 0 ? null : c.getInt(idx);
@@ -375,7 +375,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getLong(int)
      */
-    protected static long getLong(Cursor c, String column) {
+    public static long getLong(Cursor c, String column) {
         int idx = getIndex(c, column);
 
         return idx < 0 ? 0 : c.getLong(idx);
@@ -398,7 +398,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getLong(int)
      */
-    protected static Long getLongObject(Cursor c, String column) {
+    public static Long getLongObj(Cursor c, String column) {
         int idx = getIndex(c, column);
 
         return idx < 0 ? null : c.getLong(idx);
@@ -422,7 +422,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getFloat(int)
      */
-    protected static float getFloat(Cursor c, String column) {
+    public static float getFloat(Cursor c, String column) {
         int idx = getIndex(c, column);
 
         return idx < 0 ? 0 : c.getFloat(idx);
@@ -445,7 +445,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getFloat(int)
      */
-    protected static Float getFloatObj(Cursor c, String column) {
+    public static Float getFloatObj(Cursor c, String column) {
         int idx = getIndex(c, column);
 
         return idx < 0 ? null : c.getFloat(idx);
@@ -469,7 +469,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getDouble(int)
      */
-    protected static double getDouble(Cursor c, String column) {
+    public static double getDouble(Cursor c, String column) {
         int idx = getIndex(c, column);
 
         return idx < 0 ? 0 : c.getDouble(idx);
@@ -492,7 +492,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getDouble(int)
      */
-    protected static Double getDoubleObj(Cursor c, String column) {
+    public static Double getDoubleObj(Cursor c, String column) {
         int idx = getIndex(c, column);
 
         return idx < 0 ? null : c.getDouble(idx);
@@ -515,7 +515,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getString(int)
      */
-    protected static String getString(Cursor c, String column) {
+    public static String getString(Cursor c, String column) {
         int idx = getIndex(c, column);
 
         return idx < 0 ? null : c.getString(idx);
@@ -541,8 +541,8 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getLong(int)
      */
-    protected static Calendar getCalendar(Cursor c, String column) {
-        Long timestamp = getLongObject(c, column);
+    public static Calendar getCalendar(Cursor c, String column) {
+        Long timestamp = getLongObj(c, column);
 
         if (timestamp == null) return null;
 
