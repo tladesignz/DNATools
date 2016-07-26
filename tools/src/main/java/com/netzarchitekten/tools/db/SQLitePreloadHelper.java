@@ -70,7 +70,7 @@ public abstract class SQLitePreloadHelper extends SQLiteOpenHelper {
 
     /**
      * <p>
-     * Implement your check here, if you need to do something, </b>before</b> the handle to the
+     * Implement your check here, if you need to do something, <b>before</b> the handle to the
      * database is opened.
      * </p>
      * <p>

@@ -61,37 +61,51 @@ public abstract class Data {
     /**
      * Execute a raw query.
      *
-     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
-     *                  (excluding the WHERE itself).
-     *                  Passing null will return all rows for the given URI.
+     * @param query
+     *            A complete SQL query. Cannot be NULL!
      * @param selectionArgs You may include ?s in selection, which will be replaced by the values
      *                      from selectionArgs, in the order that they appear in the selection.
      *                      The values will be bound as Strings.
      * @return a {@link Cursor} pointing to the result set.
      */
-    public Cursor rawQuery(String selection, String[] selectionArgs) {
-        return mCr.query(mRawUri, null, selection, selectionArgs, null);
+    public Cursor rawQuery(String query, String[] selectionArgs) {
+        return mCr.query(mRawUri, null, query, selectionArgs, null);
     }
 
     /**
-     * Execute a raw query.
+     * Execute a raw (fully specified) query.
      *
-     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
-     *                  (excluding the WHERE itself).
-     *                  Passing null will return all rows for the given URI.
+     * @param query
+     *            A complete SQL query. Cannot be NULL!
+     * @return a {@link Cursor} pointing to the result set.
+     */
+    public Cursor rawQuery(String query) {
+        return rawQuery(query, null);
+    }
+
+    /**
+     * Fetch the selected rows with a raw (fully specified) query.
+     *
+     * @param tableRowClass
+     *            The {@link TableRow} subclass to instantiate with the row data.
+     * @param query
+     *            A complete SQL query. Cannot be NULL!
      * @param selectionArgs You may include ?s in selection, which will be replaced by the values
      *                      from selectionArgs, in the order that they appear in the selection.
      *                      The values will be bound as Strings.
      * @param limit A maximum amount of result entries.
+     * @param <T>
+     *            The {@link TableRow} subclass to instantiate with the row data. The designated
+     *            class needs to have a constructor like this:
+     *            {@link TableRow#TableRow(Context, Cursor)}, otherwise, your app will crash here!
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
-    public <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, String selection,
+    public <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, String query,
                                                 String[] selectionArgs, Integer limit) {
-
         List<T> rows = new ArrayList<>();
 
         try {
-            Cursor c = rawQuery(selection, selectionArgs);
+            Cursor c = rawQuery(query, selectionArgs);
 
             if (c != null) {
                 if (c.moveToFirst()) {
@@ -131,58 +145,79 @@ public abstract class Data {
     }
 
     /**
-     * Fetch the selected rows, unordered and unlimited.
+     * Fetch the selected rows with a raw (fully specified) query.
      *
-     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
-     *                  (excluding the WHERE itself).
-     *                  Passing null will return all rows for the given URI.
+     * @param tableRowClass
+     *            The {@link TableRow} subclass to instantiate with the row data.
+     * @param query
+     *            A complete SQL query. Cannot be NULL!
      * @param selectionArgs You may include ?s in selection, which will be replaced by the values
      *                      from selectionArgs, in the order that they appear in the selection.
      *                      The values will be bound as Strings.
+     * @param <T>
+     *            The {@link TableRow} subclass to instantiate with the row data. The designated
+     *            class needs to have a constructor like this:
+     *            {@link TableRow#TableRow(Context, Cursor)}, otherwise, your app will crash here!
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
-    public <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, String selection, String[] selectionArgs) {
-        return getRawList(tableRowClass, selection, selectionArgs, null);
+    public <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, String query,
+                                                   String[] selectionArgs) {
+        return getRawList(tableRowClass, query, selectionArgs, null);
     }
 
     /**
-     * Fetch the selected rows, unordered and unlimited.
+     * Fetch the selected rows with a raw (fully specified) query.
      *
-     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
-     *                  (excluding the WHERE itself).
-     *                  Passing null will return all rows for the given URI.
+     * @param tableRowClass
+     *            The {@link TableRow} subclass to instantiate with the row data.
+     * @param query
+     *            A complete SQL query. Cannot be NULL!
+     * @param <T>
+     *            The {@link TableRow} subclass to instantiate with the row data. The designated
+     *            class needs to have a constructor like this:
+     *            {@link TableRow#TableRow(Context, Cursor)}, otherwise, your app will crash here!
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
-    public <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, String selection) {
-        return getRawList(tableRowClass, selection, null);
+    public <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, String query) {
+        return getRawList(tableRowClass, query, null);
     }
 
     /**
-     * Fetch the selected row.
+     * Fetch the selected row with a raw (fully specified) query.
      *
-     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
-     *                  (excluding the WHERE itself).
-     *                  Passing null will return all rows for the given URI.
+     * @param tableRowClass
+     *            The {@link TableRow} subclass to instantiate with the row data.
+     * @param query
+     *            A complete SQL query. Cannot be NULL!
      * @param selectionArgs You may include ?s in selection, which will be replaced by the values
      *                      from selectionArgs, in the order that they appear in the selection.
      *                      The values will be bound as Strings.
+     * @param <T>
+     *            The {@link TableRow} subclass to instantiate with the row data. The designated
+     *            class needs to have a constructor like this:
+     *            {@link TableRow#TableRow(Context, Cursor)}, otherwise, your app will crash here!
      * @return a {@link TableRow}, possibly null.
      */
-    public <T extends TableRow> T getRaw(Class<T> tableRowClass, String selection, String[] selectionArgs) {
-        List<T> rows = getRawList(tableRowClass, selection, selectionArgs, 1);
+    public <T extends TableRow> T getRaw(Class<T> tableRowClass, String query, String[] selectionArgs) {
+        List<T> rows = getRawList(tableRowClass, query, selectionArgs, 1);
 
         return rows != null && rows.size() > 0 ? rows.get(0) : null;
     }
 
     /**
-     * Fetch the selected row.
+     * Fetch the selected row with a raw (fully specified) query.
      *
-     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
-     *                  (excluding the WHERE itself).
-     *                  Passing null will return all rows for the given URI.
+     * @param tableRowClass
+     *            The {@link TableRow} subclass to instantiate with the row data.
+     * @param query
+     *            A complete SQL query. Cannot be NULL!
+     * @param <T>
+     *            The {@link TableRow} subclass to instantiate with the row data. The designated
+     *            class needs to have a constructor like this:
+     *            {@link TableRow#TableRow(Context, Cursor)}, otherwise, your app will crash here!
      * @return a {@link TableRow}, possibly null.
      */
-    public <T extends TableRow> T getRaw(Class<T> tableRowClass, String selection) {
-        return getRaw(tableRowClass, selection, null);
+    public <T extends TableRow> T getRaw(Class<T> tableRowClass, String query) {
+        return getRaw(tableRowClass, query, null);
     }
 }
