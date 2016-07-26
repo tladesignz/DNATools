@@ -3,7 +3,7 @@ DNA Android Tools
 
 ## What is this?
 
-This library encapsulates solutions for some problems I constantly run accross
+This library encapsulates solutions for some problems I constantly run across
 in my work on the Android platform.
 
 Since I hate copying code around multiple times, this library was created.
@@ -28,6 +28,36 @@ So don't expect, this code will help you perfectly in your special situation.
 Copy a class, if you like it, grab some ideas, but don't rely on this as a
 dependency, because I won't guarantee, that updates won't break your code...
 
+## Usage
+
+In your project's `build.gradle` file:
+
+```gradle
+allprojects {
+    repositories {
+        // Should be available here:
+        jcenter()
+        // OR here:
+        maven {
+            url 'https://dl.bintray.com/berhart/maven/'
+        }
+    }
+}
+
+```
+
+
+In your module's `build.gradle` file:
+
+```gradle
+dependencies {
+    ...
+    compile 'com.netzarchitekten:tools:5.0.0'
+    ...
+}
+
+```
+
 ## Copyright
 
-2015 Die Netzarchitekten e.U., Benjamin Erhart
+2015 - 2016 Die Netzarchitekten e.U., Benjamin Erhart
