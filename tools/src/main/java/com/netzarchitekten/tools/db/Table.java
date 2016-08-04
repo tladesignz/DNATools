@@ -187,6 +187,9 @@ public abstract class Table<T extends TableRow> extends Data {
      * to warn you as early as possible about the design failure.
      * </p>
      *
+     * @param c
+     *            A {@link Cursor} pointing to a row in this table.
+     *
      * @return a {@link TableRow} subclass containing values from the database.
      */
     public T newRow(Cursor c) {
