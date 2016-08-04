@@ -52,6 +52,15 @@ public abstract class Data {
 
     protected final Uri mRawUri;
 
+    /**
+     * Instantiate a {@link Data} object which is able to make raw queries to the
+     * {@link DbContentProvider}.
+     *
+     * @param context
+     *            A {@link Context}. May not be NULL!
+     * @param baseUri
+     *            The base URI of the {@link DbContentProvider}.
+     */
     public Data(Context context, String baseUri) {
         mContext = context.getApplicationContext();
         mCr = mContext.getContentResolver();
@@ -97,7 +106,7 @@ public abstract class Data {
      * @param <T>
      *            The {@link TableRow} subclass to instantiate with the row data. The designated
      *            class needs to have a constructor like this:
-     *            {@link TableRow#TableRow(Context, Cursor)}, otherwise, your app will crash here!
+     *            {@link TableRow#TableRow(Cursor)}, otherwise, your app will crash here!
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
     public <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, String query,
@@ -111,10 +120,10 @@ public abstract class Data {
                 if (c.moveToFirst()) {
                     int i = 0;
                     Constructor<T> constructor =
-                            tableRowClass.getConstructor(Context.class, Cursor.class);
+                            tableRowClass.getConstructor(Cursor.class);
 
                     do {
-                        rows.add(constructor.newInstance(mContext, c));
+                        rows.add(constructor.newInstance(c));
                         i++;
                     } while ((limit == null || limit > i) && c.moveToNext());
                 }
@@ -157,7 +166,7 @@ public abstract class Data {
      * @param <T>
      *            The {@link TableRow} subclass to instantiate with the row data. The designated
      *            class needs to have a constructor like this:
-     *            {@link TableRow#TableRow(Context, Cursor)}, otherwise, your app will crash here!
+     *            {@link TableRow#TableRow(Cursor)}, otherwise, your app will crash here!
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
     public <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, String query,
@@ -175,7 +184,7 @@ public abstract class Data {
      * @param <T>
      *            The {@link TableRow} subclass to instantiate with the row data. The designated
      *            class needs to have a constructor like this:
-     *            {@link TableRow#TableRow(Context, Cursor)}, otherwise, your app will crash here!
+     *            {@link TableRow#TableRow(Cursor)}, otherwise, your app will crash here!
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
     public <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, String query) {
@@ -195,7 +204,7 @@ public abstract class Data {
      * @param <T>
      *            The {@link TableRow} subclass to instantiate with the row data. The designated
      *            class needs to have a constructor like this:
-     *            {@link TableRow#TableRow(Context, Cursor)}, otherwise, your app will crash here!
+     *            {@link TableRow#TableRow(Cursor)}, otherwise, your app will crash here!
      * @return a {@link TableRow}, possibly null.
      */
     public <T extends TableRow> T getRaw(Class<T> tableRowClass, String query, String[] selectionArgs) {
@@ -214,10 +223,72 @@ public abstract class Data {
      * @param <T>
      *            The {@link TableRow} subclass to instantiate with the row data. The designated
      *            class needs to have a constructor like this:
-     *            {@link TableRow#TableRow(Context, Cursor)}, otherwise, your app will crash here!
+     *            {@link TableRow#TableRow(Cursor)}, otherwise, your app will crash here!
      * @return a {@link TableRow}, possibly null.
      */
     public <T extends TableRow> T getRaw(Class<T> tableRowClass, String query) {
         return getRaw(tableRowClass, query, null);
+    }
+
+    /**
+     * Count the number of selected rows.
+     *
+     * @param query
+     *            A complete SQL query. Cannot be NULL!
+     * @param selectionArgs
+     *            You may include ?s in selection, which will be replaced by the values
+     *            from selectionArgs, in the order that they appear in the selection.
+     *            The values will be bound as Strings.
+     * @return the number of selected rows.
+     */
+    public int countRaw(String query, String[] selectionArgs) {
+        int count = 0;
+
+        Cursor c = rawQuery(query, selectionArgs);
+
+        if (c != null) {
+            count = c.getCount();
+
+            c.close();
+        }
+
+        return count;
+    }
+
+    /**
+     * Count the number of selected rows.
+     *
+     * @param query
+     *            A complete SQL query. Cannot be NULL!
+     * @return the number of selected rows.
+     */
+    public int countRaw(String query) {
+        return countRaw(query, null);
+    }
+
+    /**
+     * Check, if there are selected rows available.
+     *
+     * @param query
+     *            A complete SQL query. Cannot be NULL!
+     * @param selectionArgs
+     *            You may include ?s in selection, which will be replaced by the values
+     *            from selectionArgs, in the order that they appear in the selection.
+     *            The values will be bound as Strings.
+     * @return true, if there are rows, false if not.
+     */
+    public boolean hasRaw(String query, String[] selectionArgs) {
+        return countRaw(query, selectionArgs) > 0;
+    }
+
+    /**
+     * Check, if there are selected rows available.
+     *
+     * @param query
+     *            A complete SQL query. Cannot be NULL!
+     * @return true, if there are rows, false if not.
+     */
+    public boolean hasRaw(String query) {
+        return hasRaw(query, null);
     }
 }

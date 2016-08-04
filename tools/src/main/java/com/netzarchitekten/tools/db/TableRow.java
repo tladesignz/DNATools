@@ -49,9 +49,7 @@ public abstract class TableRow {
 
     protected boolean mChanged = false;
 
-    protected Context mContext = null;
-
-    protected ContentResolver mCr = null;
+    protected Table mTable = null;
 
     /**
      * Explicit empty constructor, otherwise compiler cries.
@@ -60,25 +58,35 @@ public abstract class TableRow {
     }
 
     /**
-     * Set the context.
+     * Set the table.
      *
-     * @param context
-     *              A {@link Context}.
+     * @param table
+     *              The {@link Table} this {@link TableRow} belongs to.
      */
-    protected TableRow(Context context) {
-        setContext(context);
+    protected TableRow(Table table) {
+        setTable(table);
     }
 
     /**
-     * Set the context and {@link #mStored} to true.
+     * Set {@link #mStored} to true.
      *
-     * @param context
-     *              A {@link Context}.
      * @param cursor
      *              A {@link Cursor} pointing to this row's data in the database.
      */
-    protected TableRow(Context context, Cursor cursor) {
-        this(context);
+    protected TableRow(Cursor cursor) {
+        mStored = true;
+    }
+
+    /**
+     * Set the table and {@link #mStored} to true.
+     *
+     * @param table
+     *              The {@link Table} this {@link TableRow} belongs to.
+     * @param cursor
+     *              A {@link Cursor} pointing to this row's data in the database.
+     */
+    protected TableRow(Table table, Cursor cursor) {
+        this(table);
 
         mStored = true;
     }
@@ -87,15 +95,22 @@ public abstract class TableRow {
      * Set the context. This is needed after object creation from a parcel,
      * because we can't store the context in the parcel.
      *
-     * @param context
-     *              A {@link Context}.
+     * @param table
+     *              The {@link Table} this {@link TableRow} belongs to.
      * @return this object for fluency.
      */
-    public TableRow setContext(Context context) {
-        mContext = context == null ? null : context.getApplicationContext();
-        mCr = mContext == null ? null : mContext.getContentResolver();
+    public TableRow setTable(Table table) {
+        mTable = table;
 
         return this;
+    }
+
+    /**
+     * @return the table belonging to this row or NULL in case this object was created
+     *         without one and it wasn't set, yet.
+     */
+    public Table getTable() {
+        return mTable;
     }
 
     /**
@@ -106,7 +121,7 @@ public abstract class TableRow {
      *         without one and it wasn't set, yet.
      */
     public Context getContext() {
-        return mContext;
+        return mTable != null ? mTable.mContext : null;
     }
 
     /**
@@ -152,17 +167,13 @@ public abstract class TableRow {
      * silently</b>!
      * </p>
      * <p>
-     * ATTENTION: If a {@link Context} object wasn't provided via
-     * {@link #setContext(Context)}after recreation from a {@link Parcel}, this
+     * ATTENTION: If a {@link Table} object wasn't provided via
+     * {@link #setTable(Table)}after recreation from a {@link Parcel}, this
      * fails silently!
      * </p>
      * 
-     * @param uri
-     *            The table URI.
      * @param values
      *            The column values.
-     * @param where
-     *            The selection criteria to identify this row uniquely.
      * @param ids
      *            The column values to identify this row uniquely in the order
      *            used in the where argument.
@@ -171,8 +182,8 @@ public abstract class TableRow {
      *         the INSERT failed. Ignore this on compound primary keys. It won't
      *         make sense in that case.
      */
-    protected Long save(Uri uri, ContentValues values, String where, Long... ids) {
-        return Long.valueOf(save(uri, values, where, toStrings(ids)));
+    protected Long save(ContentValues values, Long... ids) {
+        return Long.valueOf(save(values, toStrings(ids)));
     }
 
     /**
@@ -187,17 +198,13 @@ public abstract class TableRow {
      * silently</b>!
      * </p>
      * <p>
-     * ATTENTION: If a {@link Context} object wasn't provided via
-     * {@link #setContext(Context)}after recreation from a {@link Parcel}, this
+     * ATTENTION: If a {@link Table} object wasn't provided via
+     * {@link #setTable(Table)}after recreation from a {@link Parcel}, this
      * fails silently!
      * </p>
      *
-     * @param uri
-     *            The table URI.
      * @param values
      *            The column values.
-     * @param where
-     *            The selection criteria to identify this row uniquely.
      * @param ids
      *            The column values to identify this row uniquely in the order
      *            used in the where argument.
@@ -206,35 +213,31 @@ public abstract class TableRow {
      *         the INSERT failed. Ignore this on compound primary keys. It won't
      *         make sense in that case.
      */
-    protected String save(Uri uri, ContentValues values, String where, String... ids) {
-        if (mCr != null && (!mStored || mChanged)) {
+    protected String save(ContentValues values, String... ids) {
+        if (mTable != null && (!mStored || mChanged)) {
             if (mStored) {
-                if (mCr.update(uri, values, where, ids) > 0) {
+                if (mTable.updateUniqueRow(values, ids) > 0) {
                     mChanged = false;
                 }
             } else {
                 // Check, if we can find this row already.
-                Cursor c = mCr.query(uri, null, where, ids, null);
-
-                if (c != null && c.getCount() > 0) {
+                if (mTable.has(ids)) {
                     // This row is existing, already!
                     mStored = true;
                     mChanged = true;
 
                     // Recall this method, do an UPDATE instead.
-                    ids[0] = save(uri, values, where, ids);
+                    ids[0] = save(values, ids);
                 } else {
-                    Uri idUri = mCr.insert(uri, values);
+                    String id = mTable.insert(values);
 
-                    if (idUri != null) {
+                    if (id != null) {
                         mStored = true;
                         mChanged = false;
 
-                        ids[0] = idUri.toString();
+                        ids[0] = id;
                     }
                 }
-
-                if (c!= null) c.close();
             }
         }
 
@@ -245,27 +248,23 @@ public abstract class TableRow {
      * Store object to database.
      *
      * @return this object for fluency.
-     * @see #save(Uri, ContentValues, String, String...)
+     * @see #save(ContentValues, String...)
      */
     public abstract TableRow save();
 
     /**
      * Delete object from database.
      *
-     * @param uri
-     *            The table URI.
-     * @param where
-     *            The selection criteria to identify this row uniquely.
      * @param ids
      *            The column values to identify this row uniquely in the order
      *            used in the where argument.
      * @return true on success, false on failure.
      */
-    protected boolean delete(Uri uri, String where, Object... ids) {
+    protected boolean delete(Object... ids) {
         boolean deleted = false;
 
-        if (mCr != null && mStored) {
-            int count = mCr.delete(uri, where, toStrings(ids));
+        if (mTable != null && mStored) {
+            int count = mTable.deleteUniqueRow(toStrings(ids));
 
             deleted = count > 0;
 

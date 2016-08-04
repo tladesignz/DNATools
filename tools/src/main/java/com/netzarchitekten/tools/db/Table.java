@@ -25,10 +25,12 @@
  */
 package com.netzarchitekten.tools.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -42,9 +44,11 @@ import java.util.List;
  */
 public abstract class Table<T extends TableRow> extends Data {
 
+    protected final Class<T> mTableRowClass;
+
     protected final Uri mUri;
 
-    protected final Class<T> mTableRowClass;
+    protected final String mUniqueRowSelection;
 
     /**
      * Creates this table in the latest version.
@@ -82,30 +86,152 @@ public abstract class Table<T extends TableRow> extends Data {
      *              The base URI like this: "content://com.example.app.db.contentprovider/"
      * @param name
      *              The table name.
+     * @param uniqueRowKeys
+     *              The columns names which are needed to identify a row uniquely.
      * @see <a href="http://stackoverflow.com/questions/3403909/get-generic-type-of-class-at-runtime"
      * >Stackoverflow</a>
      */
-    public Table(Class<T> tableRowClass, Context context, String baseUri, String name) {
+    public Table(Class<T> tableRowClass, Context context, String baseUri, String name,
+                 String[] uniqueRowKeys) {
         super(context, baseUri);
+
+        mTableRowClass = tableRowClass;
 
         mUri = Uri.parse(baseUri + name);
 
-        mTableRowClass = tableRowClass;
+        String[] keys = new String[uniqueRowKeys.length];
+
+        for (int i = 0; i < uniqueRowKeys.length; i++) {
+            keys[i] = String.format("%s = ?", uniqueRowKeys[i]);
+        }
+
+        mUniqueRowSelection = TextUtils.join(" AND ", keys);
     }
 
     /**
-     * Fetch the selected rows ordered by the given order with limit.
+     * Instantiate table model for CRUD operations.
      *
-     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
-     *                  (excluding the WHERE itself).
-     *                  Passing null will return all rows for the given URI.
-     * @param selectionArgs You may include ?s in selection, which will be replaced by the values
-     *                      from selectionArgs, in the order that they appear in the selection.
-     *                      The values will be bound as Strings.
-     * @param sortOrder How to order the rows, formatted as an SQL ORDER BY clause (excluding the
-     *                  ORDER BY itself). Passing null will use the default sort order,
-     *                  which may be unordered.
-     * @param limit A maximum amount of result entries.
+     * @param tableRowClass
+     *              The class of the {@link TableRow}. Needs to be explicitly given here, because
+     *              at runtime this information is sometimes lost, otherwise.
+     * @param context
+     *              A {@link Context}.
+     * @param baseUri
+     *              The base URI like this: "content://com.example.app.db.contentprovider/"
+     * @param name
+     *              The table name.
+     * @param uniqueRowKey
+     *              The column name which is needed to identify a row uniquely.
+     * @see <a href="http://stackoverflow.com/questions/3403909/get-generic-type-of-class-at-runtime"
+     * >Stackoverflow</a>
+     */
+    public Table(Class<T> tableRowClass, Context context, String baseUri, String name,
+                 String uniqueRowKey) {
+        this(tableRowClass, context, baseUri, name, new String[] { uniqueRowKey });
+    }
+
+    /**
+     * @return the URI for this table.
+     */
+    public Uri getUri() {
+        return mUri;
+    }
+
+    /**
+     * @return the selection {@link String} which identifies a row in this table uniquely.
+     */
+    public String getUniqueRowSelection() {
+        return mUniqueRowSelection;
+    }
+
+    /**
+     * <p>
+     * Instantiates a new, unstored row containing only default values.
+     * </p>
+     * <p>
+     * Your {@link TableRow} implementation will need a constructor like this:
+     * {@link TableRow#TableRow(Table)} – otherwise this method will fail horribly, in order to
+     * warn you as early as possible about the design failure.
+     * </p>
+     *
+     * @return a new, unstored {@link TableRow} subclass.
+     */
+    public T newRow() {
+        try {
+            return mTableRowClass.getConstructor(this.getClass()).newInstance(this);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
+        return null;
+    }
+
+    /**
+     * <p>
+     * Instantiates a new, stored row from a given {@link Cursor} which has to point to a
+     * database table row.
+     * </p>
+     * <p>
+     * Your {@link TableRow} implementation will need a constructor like this:
+     * {@link TableRow#TableRow(Table, Cursor)} – otherwise this method will fail horribly, in order
+     * to warn you as early as possible about the design failure.
+     * </p>
+     *
+     * @return a {@link TableRow} subclass containing values from the database.
+     */
+    public T newRow(Cursor c) {
+        try {
+            return mTableRowClass.getConstructor(this.getClass(), Cursor.class).newInstance(this, c);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
+        return null;
+    }
+
+    /**
+     * <p>
+     * Fetch the selected rows ordered by the given order with limit.
+     * <p>
+     * Your {@link TableRow} implementation will need a constructor like this:
+     * {@link TableRow#TableRow(Table, Cursor)} – otherwise this method will fail horribly, in order
+     * to warn you as early as possible about the design failure.
+     * </p>
+     *
+     * @param selection
+     *            A filter declaring which rows to return, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     *            Passing null will return all rows for the given URI.
+     * @param selectionArgs
+     *            You may include ?s in selection, which will be replaced by the values
+     *            from selectionArgs, in the order that they appear in the selection.
+     *            The values will be bound as Strings.
+     * @param sortOrder
+     *            How to order the rows, formatted as an SQL ORDER BY clause (excluding the
+     *            ORDER BY itself). Passing null will use the default sort order,
+     *            which may be unordered.
+     * @param limit
+     *            A maximum amount of result entries.
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
     protected List<T> getList(String selection, String[] selectionArgs, String sortOrder,
@@ -120,10 +246,10 @@ public abstract class Table<T extends TableRow> extends Data {
                 if (c.moveToFirst()) {
                     int i = 0;
                     Constructor<T> constructor =
-                            mTableRowClass.getConstructor(Context.class, Cursor.class);
+                            mTableRowClass.getConstructor(this.getClass(), Cursor.class);
 
                     do {
-                        rows.add(constructor.newInstance(mContext, c));
+                        rows.add(constructor.newInstance(this, c));
                         i++;
                     } while ((limit == null || limit > i) && c.moveToNext());
                 }
@@ -154,17 +280,26 @@ public abstract class Table<T extends TableRow> extends Data {
     }
 
     /**
+     * <p>
      * Fetch all selected rows ordered by the given order.
+     * <p>
+     * Your {@link TableRow} implementation will need a constructor like this:
+     * {@link TableRow#TableRow(Table, Cursor)} – otherwise this method will fail horribly, in order
+     * to warn you as early as possible about the design failure.
+     * </p>
      *
-     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
-     *                  (excluding the WHERE itself).
-     *                  Passing null will return all rows for the given URI.
-     * @param selectionArgs You may include ?s in selection, which will be replaced by the values
-     *                      from selectionArgs, in the order that they appear in the selection.
-     *                      The values will be bound as Strings.
-     * @param sortOrder How to order the rows, formatted as an SQL ORDER BY clause (excluding the
-     *                  ORDER BY itself). Passing null will use the default sort order,
-     *                  which may be unordered.
+     * @param selection
+     *            A filter declaring which rows to return, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     *            Passing null will return all rows for the given URI.
+     * @param selectionArgs
+     *            You may include ?s in selection, which will be replaced by the values
+     *            from selectionArgs, in the order that they appear in the selection.
+     *            The values will be bound as Strings.
+     * @param sortOrder
+     *            How to order the rows, formatted as an SQL ORDER BY clause (excluding the
+     *            ORDER BY itself). Passing null will use the default sort order,
+     *            which may be unordered.
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
     protected List<T> getList(String selection, String[] selectionArgs,
@@ -173,14 +308,22 @@ public abstract class Table<T extends TableRow> extends Data {
     }
 
     /**
+     * <p>
      * Fetch the selected rows unordered and unlimited.
+     * <p>
+     * Your {@link TableRow} implementation will need a constructor like this:
+     * {@link TableRow#TableRow(Table, Cursor)} – otherwise this method will fail horribly, in order
+     * to warn you as early as possible about the design failure.
+     * </p>
      *
-     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
-     *                  (excluding the WHERE itself).
-     *                  Passing null will return all rows for the given URI.
-     * @param selectionArgs You may include ?s in selection, which will be replaced by the values
-     *                      from selectionArgs, in the order that they appear in the selection.
-     *                      The values will be bound as Strings.
+     * @param selection
+     *            A filter declaring which rows to return, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     *            Passing null will return all rows for the given URI.
+     * @param selectionArgs
+     *            You may include ?s in selection, which will be replaced by the values
+     *            from selectionArgs, in the order that they appear in the selection.
+     *            The values will be bound as Strings.
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
     protected List<T> getList(String selection, String[] selectionArgs) {
@@ -188,11 +331,18 @@ public abstract class Table<T extends TableRow> extends Data {
     }
 
     /**
-     * Fetch the selected rows, unordered and unlimited.
+     * <p>
+     * Fetch the selected rows unordered and unlimited.
+     * <p>
+     * Your {@link TableRow} implementation will need a constructor like this:
+     * {@link TableRow#TableRow(Table, Cursor)} – otherwise this method will fail horribly, in order
+     * to warn you as early as possible about the design failure.
+     * </p>
      *
-     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
-     *                  (excluding the WHERE itself).
-     *                  Passing null will return all rows for the given URI.
+     * @param selection
+     *            A filter declaring which rows to return, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     *            Passing null will return all rows for the given URI.
      * @return a list of {@link TableRow}s, possibly empty, never null.
      */
     protected List<T> getList(String selection) {
@@ -200,7 +350,13 @@ public abstract class Table<T extends TableRow> extends Data {
     }
 
     /**
+     * <p>
      * Fetch all rows in the table, unordered.
+     * <p>
+     * Your {@link TableRow} implementation will need a constructor like this:
+     * {@link TableRow#TableRow(Table, Cursor)} – otherwise this method will fail horribly, in order
+     * to warn you as early as possible about the design failure.
+     * </p>
      *
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
@@ -209,17 +365,26 @@ public abstract class Table<T extends TableRow> extends Data {
     }
 
     /**
+     * <p>
      * Fetch the selected row.
+     * <p>
+     * Your {@link TableRow} implementation will need a constructor like this:
+     * {@link TableRow#TableRow(Table, Cursor)} – otherwise this method will fail horribly, in order
+     * to warn you as early as possible about the design failure.
+     * </p>
      *
-     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
-     *                  (excluding the WHERE itself).
-     *                  Passing null will return all rows for the given URI.
-     * @param selectionArgs You may include ?s in selection, which will be replaced by the values
-     *                      from selectionArgs, in the order that they appear in the selection.
-     *                      The values will be bound as Strings.
-     * @param sortOrder How to order the rows, formatted as an SQL ORDER BY clause (excluding the
-     *                  ORDER BY itself). Passing null will use the default sort order,
-     *                  which may be unordered.
+     * @param selection
+     *            A filter declaring which rows to return, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     *            Passing null will return all rows for the given URI.
+     * @param selectionArgs
+     *            You may include ?s in selection, which will be replaced by the values
+     *            from selectionArgs, in the order that they appear in the selection.
+     *            The values will be bound as Strings.
+     * @param sortOrder
+     *            How to order the rows, formatted as an SQL ORDER BY clause (excluding the
+     *            ORDER BY itself). Passing null will use the default sort order,
+     *            which may be unordered.
      * @return a {@link TableRow}, possibly null.
      */
     protected T get(String selection, String[] selectionArgs, String sortOrder) {
@@ -229,14 +394,22 @@ public abstract class Table<T extends TableRow> extends Data {
     }
 
     /**
+     * <p>
      * Fetch the selected row.
+     * <p>
+     * Your {@link TableRow} implementation will need a constructor like this:
+     * {@link TableRow#TableRow(Table, Cursor)} – otherwise this method will fail horribly, in order
+     * to warn you as early as possible about the design failure.
+     * </p>
      *
-     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
-     *                  (excluding the WHERE itself).
-     *                  Passing null will return all rows for the given URI.
-     * @param selectionArgs You may include ?s in selection, which will be replaced by the values
-     *                      from selectionArgs, in the order that they appear in the selection.
-     *                      The values will be bound as Strings.
+     * @param selection
+     *            A filter declaring which rows to return, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     *            Passing null will return all rows for the given URI.
+     * @param selectionArgs
+     *            You may include ?s in selection, which will be replaced by the values
+     *            from selectionArgs, in the order that they appear in the selection.
+     *            The values will be bound as Strings.
      * @return a {@link TableRow}, possibly null.
      */
     protected T get(String selection, String[] selectionArgs) {
@@ -244,11 +417,18 @@ public abstract class Table<T extends TableRow> extends Data {
     }
 
     /**
+     * <p>
      * Fetch the selected row.
+     * <p>
+     * Your {@link TableRow} implementation will need a constructor like this:
+     * {@link TableRow#TableRow(Table, Cursor)} – otherwise this method will fail horribly, in order
+     * to warn you as early as possible about the design failure.
+     * </p>
      *
-     * @param selection A filter declaring which rows to return, formatted as an SQL WHERE clause
-     *                  (excluding the WHERE itself).
-     *                  Passing null will return all rows for the given URI.
+     * @param selection
+     *            A filter declaring which rows to return, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     *            Passing null will return all rows for the given URI.
      * @return a {@link TableRow}, possibly null.
      */
     protected T get(String selection) {
@@ -256,11 +436,239 @@ public abstract class Table<T extends TableRow> extends Data {
     }
 
     /**
+     * <p>
+     * Fetch a unique row as defined in the constructor.
+     * <p>
+     * Your {@link TableRow} implementation will need a constructor like this:
+     * {@link TableRow#TableRow(Table, Cursor)} – otherwise this method will fail horribly, in order
+     * to warn you as early as possible about the design failure.
+     * </p>
+     *
+     * @param selectionArgs
+     *            Values for all columns which identify a row uniquely.
+     *
+     * @return a {@link TableRow}, possibly null.
+     */
+    protected T get(String[] selectionArgs) {
+        return get(mUniqueRowSelection, selectionArgs);
+    }
+
+    /**
+     * <p>
      * Fetch a random row.
+     * <p>
+     * Your {@link TableRow} implementation will need a constructor like this:
+     * {@link TableRow#TableRow(Table, Cursor)} – otherwise this method will fail horribly, in order
+     * to warn you as early as possible about the design failure.
+     * </p>
      *
      * @return a {@link TableRow}, possibly null.
      */
     protected T get() {
-        return get(null);
+        return get((String) null);
+    }
+
+    /**
+     * Count the number of selected rows.
+     *
+     * @param selection
+     *            A filter declaring which rows to return, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     *            Passing null will return all rows for the given URI.
+     * @param selectionArgs
+     *            You may include ?s in selection, which will be replaced by the values
+     *            from selectionArgs, in the order that they appear in the selection.
+     *            The values will be bound as Strings.
+     * @return the number of selected rows.
+     */
+    public int count(String selection, String[] selectionArgs) {
+        int count = 0;
+
+        Cursor c = mCr.query(mUri, null, selection, selectionArgs, null);
+
+        if (c != null) {
+            count = c.getCount();
+
+            c.close();
+        }
+
+        return count;
+    }
+
+    /**
+     * Count the number of selected rows.
+     *
+     * @param selection
+     *            A filter declaring which rows to return, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     *            Passing null will return all rows for the given URI.
+     * @return the number of selected rows.
+     */
+    public int count(String selection) {
+        return count(selection, null);
+    }
+
+    /**
+     * Count the number of all rows.
+     *
+     * @return the number of all rows.
+     */
+    public int count() {
+        return count(null);
+    }
+
+    /**
+     * Check, if there are selected rows available.
+     *
+     * @param selection
+     *            A filter declaring which rows to return, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     *            Passing null will return all rows for the given URI.
+     * @param selectionArgs
+     *            You may include ?s in selection, which will be replaced by the values
+     *            from selectionArgs, in the order that they appear in the selection.
+     *            The values will be bound as Strings.
+     * @return true, if there are rows, false if not.
+     */
+    public boolean has(String selection, String[] selectionArgs) {
+        return count(selection, selectionArgs) > 0;
+    }
+
+    /**
+     * Check, if there are selected rows available.
+     *
+     * @param selection
+     *            A filter declaring which rows to return, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     *            Passing null will return all rows for the given URI.
+     * @return true, if there are rows, false if not.
+     */
+    public boolean has(String selection) {
+        return has(selection, null);
+    }
+
+    /**
+     * Check, if there is a unique (as defined in the constructor) row available.
+     *
+     * @param selectionArgs
+     *            You may include ?s in selection, which will be replaced by the values
+     *            from selectionArgs, in the order that they appear in the selection.
+     *            The values will be bound as Strings.
+     * @return true, if there are rows, false if not.
+     */
+    public boolean has(String[] selectionArgs) {
+        return has(mUniqueRowSelection, selectionArgs);
+    }
+
+    /**
+     * Check, if there are any rows available.
+     *
+     * @return true, if there are rows, false if not.
+     */
+    public boolean has() {
+        return has((String) null);
+    }
+
+    /**
+     * Update row(s) of this table.
+     *
+     * @param values
+     *            The new field values. The key is the column name for the field. A null value will
+     *            remove an existing field value.
+     * @param where
+     *            A filter to apply to rows before updating, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     * @param selectionArgs
+     *            You may include ?s in selection, which will be replaced by the values
+     *            from selectionArgs, in the order that they appear in the selection.
+     *            The values will be bound as Strings.
+     * @return the number of rows updated.
+     */
+    public int update(ContentValues values, String where, String[] selectionArgs) {
+        return mCr.update(mUri, values, where, selectionArgs);
+    }
+
+    /**
+     * Update row(s) of this table.
+     *
+     * @param values
+     *            The new field values. The key is the column name for the field. A null value will
+     *            remove an existing field value.
+     * @param where
+     *            A filter to apply to rows before updating, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     * @return the number of rows updated.
+     */
+    public int update(ContentValues values, String where) {
+        return update(values, where, null);
+    }
+
+    /**
+     * Update a unique row as defined in the constructor.
+     *
+     * @param values
+     *            The new field values. The key is the column name for the field. A null value will
+     *            remove an existing field value.
+     * @param selectionArgs
+     *            Values for all columns which identify a row uniquely.
+     *
+     * @return the number of rows deleted.
+     */
+    public int updateUniqueRow(ContentValues values, String[] selectionArgs) {
+        return update(values, mUniqueRowSelection, selectionArgs);
+    }
+
+    /**
+     * Delete row(s) from this table.
+     *
+     * @param where
+     *            A filter to apply to rows before updating, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     * @param selectionArgs
+     *            You may include ?s in selection, which will be replaced by the values
+     *            from selectionArgs, in the order that they appear in the selection.
+     *            The values will be bound as Strings.
+     * @return the number of rows deleted.
+     */
+    public int delete(String where, String[] selectionArgs) {
+        return mCr.delete(mUri, where, selectionArgs);
+    }
+
+    /**
+     * Delete row(s) from this table.
+     *
+     * @param where
+     *            A filter to apply to rows before updating, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     * @return the number of rows deleted.
+     */
+    public int delete(String where) {
+        return delete(where, null);
+    }
+
+    /**
+     * Delete a unique row as defined in the constructor.
+     *
+     * @param selectionArgs
+     *            Values for all rows which identify a row uniquely.
+     *
+     * @return the number of rows deleted.
+     */
+    public int deleteUniqueRow(String[] selectionArgs) {
+        return delete(mUniqueRowSelection, selectionArgs);
+    }
+
+    /**
+     * Insert a row into this table.
+     *
+     * @param values
+     *            The new field values. The key is the column name for the field. A null value will
+     *            remove an existing field value.
+     * @return the primary key as {@link String} or NULL if insert wasn't successful.
+     */
+    public String insert(ContentValues values) {
+        Uri uri = mCr.insert(mUri, values);
+
+        return uri != null ? uri.toString() : null;
     }
 }
