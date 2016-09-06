@@ -410,6 +410,38 @@ public abstract class Table<T extends TableRow> extends Data {
      * to warn you as early as possible about the design failure.
      * </p>
      *
+     * @param projection
+     *            A list of which columns to return. Passing null will return all columns, which
+     *            is inefficient.
+     * @param selection
+     *            A filter declaring which rows to return, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     *            Passing null will return all rows for the given URI.
+     * @param selectionArgs
+     *            You may include ?s in selection, which will be replaced by the values
+     *            from selectionArgs, in the order that they appear in the selection.
+     *            The values will be bound as Strings.
+     * @param sortOrder
+     *            How to order the rows, formatted as an SQL ORDER BY clause (excluding the
+     *            ORDER BY itself). Passing null will use the default sort order,
+     *            which may be unordered.
+     * @return a {@link TableRow}, possibly null.
+     */
+    protected T get(String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        List<T> rows = getList(projection, selection, selectionArgs, sortOrder, 1);
+
+        return rows != null && rows.size() > 0 ? rows.get(0) : null;
+    }
+
+    /**
+     * <p>
+     * Fetch the selected row.
+     * <p>
+     * Your {@link TableRow} implementation will need a constructor like this:
+     * {@link TableRow#TableRow(Table, Cursor)} – otherwise this method will fail horribly, in order
+     * to warn you as early as possible about the design failure.
+     * </p>
+     *
      * @param selection
      *            A filter declaring which rows to return, formatted as an SQL WHERE clause
      *            (excluding the WHERE itself).
@@ -425,9 +457,7 @@ public abstract class Table<T extends TableRow> extends Data {
      * @return a {@link TableRow}, possibly null.
      */
     protected T get(String selection, String[] selectionArgs, String sortOrder) {
-        List<T> rows = getList(selection, selectionArgs, sortOrder, 1);
-
-        return rows != null && rows.size() > 0 ? rows.get(0) : null;
+        return get(null, selection, selectionArgs, sortOrder);
     }
 
     /**
