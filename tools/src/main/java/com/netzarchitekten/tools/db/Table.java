@@ -221,6 +221,9 @@ public abstract class Table<T extends TableRow> extends Data {
      * to warn you as early as possible about the design failure.
      * </p>
      *
+     * @param projection
+     *            A list of which columns to return. Passing null will return all columns, which
+     *            is inefficient.
      * @param selection
      *            A filter declaring which rows to return, formatted as an SQL WHERE clause
      *            (excluding the WHERE itself).
@@ -237,19 +240,19 @@ public abstract class Table<T extends TableRow> extends Data {
      *            A maximum amount of result entries.
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
-    protected List<T> getList(String selection, String[] selectionArgs, String sortOrder,
-                              Integer limit) {
+    protected List<T> getList(String[] projection, String selection, String[] selectionArgs,
+                              String sortOrder, Integer limit) {
 
         List<T> rows = new ArrayList<>();
 
         try {
-            Cursor c = mCr.query(mUri, null, selection, selectionArgs, sortOrder);
+            Cursor c = mCr.query(mUri, projection, selection, selectionArgs, sortOrder);
 
             if (c != null) {
                 if (c.moveToFirst()) {
                     int i = 0;
                     Constructor<T> constructor =
-                            mTableRowClass.getConstructor(this.getClass(), Cursor.class);
+                        mTableRowClass.getConstructor(this.getClass(), Cursor.class);
 
                     do {
                         rows.add(constructor.newInstance(this, c));
@@ -280,6 +283,37 @@ public abstract class Table<T extends TableRow> extends Data {
         }
 
         return rows;
+    }
+
+    /**
+     * <p>
+     * Fetch the selected rows ordered by the given order with limit.
+     * <p>
+     * Your {@link TableRow} implementation will need a constructor like this:
+     * {@link TableRow#TableRow(Table, Cursor)} – otherwise this method will fail horribly, in order
+     * to warn you as early as possible about the design failure.
+     * </p>
+     *
+     * @param selection
+     *            A filter declaring which rows to return, formatted as an SQL WHERE clause
+     *            (excluding the WHERE itself).
+     *            Passing null will return all rows for the given URI.
+     * @param selectionArgs
+     *            You may include ?s in selection, which will be replaced by the values
+     *            from selectionArgs, in the order that they appear in the selection.
+     *            The values will be bound as Strings.
+     * @param sortOrder
+     *            How to order the rows, formatted as an SQL ORDER BY clause (excluding the
+     *            ORDER BY itself). Passing null will use the default sort order,
+     *            which may be unordered.
+     * @param limit
+     *            A maximum amount of result entries.
+     * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
+     */
+    protected List<T> getList(String selection, String[] selectionArgs, String sortOrder,
+                              Integer limit) {
+
+        return getList(null, selection, selectionArgs, sortOrder, limit);
     }
 
     /**
