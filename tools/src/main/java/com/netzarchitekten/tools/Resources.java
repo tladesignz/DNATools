@@ -33,14 +33,12 @@ import android.os.Build;
 import java.util.Locale;
 
 /**
- * <p>
  * Encapsulates deprecation warning for
  * <ul>
  *     <li>{@link android.content.res.Resources#getColor(int)} since Marshmallow (API 23)</li>
  *     <li>{@link android.content.res.Resources#getDrawable(int)} since Lollipop MR1 (API 22)</li>
  *     <li>{@link android.content.res.Configuration#locale} since N (API 24)</li>
  * </ul>
- * </p>
  * <p>
  * Contains a static and an OO interface.
  * </p>
