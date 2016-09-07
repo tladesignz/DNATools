@@ -30,12 +30,16 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 
+import java.util.Locale;
+
 /**
  * <p>
  * Encapsulates deprecation warning for
- * {@link android.content.res.Resources#getColor(int)} since Android Marshmallow
- * (API 23) and {@link android.content.res.Resources#getDrawable(int)} since
- * Android Lollipop MR1 (API 22).
+ * <ul>
+ *     <li>{@link android.content.res.Resources#getColor(int)} since Marshmallow (API 23)</li>
+ *     <li>{@link android.content.res.Resources#getDrawable(int)} since Lollipop MR1 (API 22)</li>
+ *     <li>{@link android.content.res.Configuration#locale} since N (API 24)</li>
+ * </ul>
  * </p>
  * <p>
  * Contains a static and an OO interface.
@@ -96,6 +100,20 @@ public class Resources {
     }
 
     /**
+     * Honor deprecation of {@link android.content.res.Configuration#locale} since API 24.
+     *
+     * @return the currently used primary locale.
+     */
+    @SuppressWarnings("deprecation")
+    @SuppressLint("NewApi")
+    public Locale getPrimaryLocale() {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
+            return mResources.getConfiguration().getLocales().get(0);
+
+        return mResources.getConfiguration().locale;
+    }
+
+    /**
      * @param context
      *            A context object to access the
      *            {@link android.content.res.Resources} of the app.
@@ -121,5 +139,15 @@ public class Resources {
      */
     public static Drawable getDrawable(Context context, int id) {
         return new Resources(context).getDrawable(id);
+    }
+
+    /**
+     * @param context
+     *            A context object to access the
+     *            {@link android.content.res.Resources} of the app.
+     * @return the currently used primary locale.
+     */
+    public static Locale getPrimaryLocale(Context context) {
+        return new Resources(context).getPrimaryLocale();
     }
 }
