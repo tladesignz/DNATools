@@ -27,8 +27,12 @@ package com.netzarchitekten.tools;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.LocaleList;
+import android.util.DisplayMetrics;
 
 import java.util.Locale;
 
@@ -98,7 +102,7 @@ public class Resources {
     }
 
     /**
-     * Honor deprecation of {@link android.content.res.Configuration#locale} since API 24.
+     * Honor deprecation of {@link Configuration#locale} since API 24.
      *
      * @return the currently used primary locale.
      */
@@ -109,6 +113,73 @@ public class Resources {
             return mResources.getConfiguration().getLocales().get(0);
 
         return mResources.getConfiguration().locale;
+    }
+
+    /**
+     * <p>
+     * Sets a new (and only) locale for this app until it is reset using {@link #resetLocale()},
+     * <b>as long</b>, as the primary locale isn't already the same.
+     * </p>
+     * <p>
+     * Makes use of a side-effect of
+     * {@link android.content.res.Resources#Resources(AssetManager, DisplayMetrics, Configuration)},
+     * which propagates the localization change.
+     * </p>
+     *
+     * @param newLocale
+     *            The new {@link Locale}.
+     * @return this object for fluency.
+     */
+    @SuppressWarnings("deprecation")
+    @SuppressLint("NewApi")
+    public Resources setLocale(Locale newLocale) {
+        if (!getPrimaryLocale().equals(newLocale)) {
+            Configuration newConfig = new Configuration(mResources.getConfiguration());
+
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                newConfig.setLocales(new LocaleList(newLocale));
+            } else {
+                newConfig.locale = newLocale;
+            }
+
+            new android.content.res.Resources(mResources.getAssets(),
+                mResources.getDisplayMetrics(),
+                newConfig);
+        }
+
+        return this;
+    }
+
+    /**
+     * <p>
+     * Sets a new (and only) locale for this app until it is reset using {@link #resetLocale()}.
+     * </p>
+     * <p>
+     * Makes use of a side-effect of
+     * {@link android.content.res.Resources#Resources(AssetManager, DisplayMetrics, Configuration)},
+     * which propagates the localization change.
+     * </p>
+     *
+     * @param newLocale
+     *            The new locale as {@link String}.
+     * @return this object for fluency.
+     */
+    public Resources setLocale(String newLocale) {
+        return setLocale(new Locale(newLocale));
+    }
+
+    /**
+     * Reset the current primary locale to the originally set device's locale using a
+     * side-effect of
+     * {@link android.content.res.Resources#Resources(AssetManager, DisplayMetrics, Configuration)}.
+     * @return this object for fluency.
+     */
+    public Resources resetLocale() {
+        new android.content.res.Resources(mResources.getAssets(),
+            mResources.getDisplayMetrics(),
+            mResources.getConfiguration());
+
+        return this;
     }
 
     /**
@@ -147,5 +218,39 @@ public class Resources {
      */
     public static Locale getPrimaryLocale(Context context) {
         return new Resources(context).getPrimaryLocale();
+    }
+
+    /**
+     * @param context
+     *            A context object to access the
+     *            {@link android.content.res.Resources} of the app.
+     * @param newLocale
+     *            The new {@link Locale}.
+     * @return this object for fluency.
+     */
+    public static Resources setLocale(Context context, Locale newLocale) {
+        return new Resources(context).setLocale(newLocale);
+    }
+
+    /**
+     * @param context
+     *            A context object to access the
+     *            {@link android.content.res.Resources} of the app.
+     * @param newLocale
+     *            The new locale as {@link String}.
+     * @return this object for fluency.
+     */
+    public static Resources setLocale(Context context, String newLocale) {
+        return new Resources(context).setLocale(newLocale);
+    }
+
+    /**
+     * @param context
+     *            A context object to access the
+     *            {@link android.content.res.Resources} of the app.
+     * @return this object for fluency.
+     */
+    public static Resources resetLocale(Context context) {
+        return new Resources(context).resetLocale();
     }
 }
