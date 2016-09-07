@@ -52,7 +52,7 @@ In your module's `build.gradle` file:
 ```gradle
 dependencies {
     ...
-    compile 'com.netzarchitekten:tools:5.0.0'
+    compile 'com.netzarchitekten:tools:6.2.0'
     ...
 }
 
