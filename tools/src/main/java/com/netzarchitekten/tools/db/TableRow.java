@@ -52,6 +52,13 @@ public abstract class TableRow {
     protected Table mTable = null;
 
     /**
+     * Explicit empty constructor, so subclasses don't need to call other constructors.
+     */
+    @SuppressWarnings("unused")
+    protected TableRow() {
+    }
+
+    /**
      * Set the table.
      *
      * @param table
