@@ -69,6 +69,13 @@ public abstract class Data {
     }
 
     /**
+     * @return the application {@link Context}.
+     */
+    public Context getContext() {
+        return mContext;
+    }
+
+    /**
      * Execute a raw query.
      *
      * @param query

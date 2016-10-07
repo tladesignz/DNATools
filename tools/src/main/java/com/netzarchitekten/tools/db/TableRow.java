@@ -118,7 +118,7 @@ public abstract class TableRow {
      *         without one and it wasn't set, yet.
      */
     public Context getContext() {
-        return mTable != null ? mTable.mContext : null;
+        return mTable != null ? mTable.getContext() : null;
     }
 
     /**
