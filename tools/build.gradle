@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 11
         targetSdkVersion 24
-        versionCode 24
-        versionName "6.4.0"
+        versionCode 25
+        versionName "6.4.1"
     }
 
     buildTypes {
@@ -17,6 +17,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    return void // Avoid lint warning.
 }
 
 ext {
@@ -32,7 +34,7 @@ ext {
     siteUrl = 'https://github.com/tladesignz/DNATools'
     gitUrl = 'https://github.com/tladesignz/DNATools.git'
 
-    libraryVersion = '6.4.0'
+    libraryVersion = '6.4.1'
 
     developerId = 'berhart'
     developerName = 'Benjamin Erhart'
