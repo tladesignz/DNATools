@@ -50,6 +50,7 @@ import javax.net.ssl.TrustManagerFactory;
 /**
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class BaseAuthenticator {
 
     protected final Context mContext;

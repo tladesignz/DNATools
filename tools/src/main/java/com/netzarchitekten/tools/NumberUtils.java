@@ -32,8 +32,8 @@ import android.text.TextUtils;
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
+@SuppressWarnings("unused")
 public class NumberUtils {
-
 
     /**
      * Try to parse an integer out of a string or return the default value if

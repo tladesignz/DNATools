@@ -40,6 +40,7 @@ import java.util.List;
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class Data {
 
     /**
@@ -88,6 +89,7 @@ public abstract class Data {
      *            A complete SQL query. Cannot be NULL!
      * @return a {@link Cursor} pointing to the result set.
      */
+    @SuppressWarnings("unused")
     public Cursor rawQuery(String query) {
         return rawQuery(query, null);
     }
@@ -113,6 +115,7 @@ public abstract class Data {
                                                 String[] selectionArgs, Integer limit) {
         List<T> rows = new ArrayList<>();
 
+        //noinspection TryWithIdenticalCatches
         try {
             Cursor c = rawQuery(query, selectionArgs);
 
@@ -187,6 +190,7 @@ public abstract class Data {
      *            {@link TableRow#TableRow(Cursor)}, otherwise, your app will crash here!
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
+    @SuppressWarnings("unused")
     public <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, String query) {
         return getRawList(tableRowClass, query, null);
     }
@@ -226,6 +230,7 @@ public abstract class Data {
      *            {@link TableRow#TableRow(Cursor)}, otherwise, your app will crash here!
      * @return a {@link TableRow}, possibly null.
      */
+    @SuppressWarnings("unused")
     public <T extends TableRow> T getRaw(Class<T> tableRowClass, String query) {
         return getRaw(tableRowClass, query, null);
     }
@@ -262,6 +267,7 @@ public abstract class Data {
      *            A complete SQL query. Cannot be NULL!
      * @return the number of selected rows.
      */
+    @SuppressWarnings("unused")
     public int countRaw(String query) {
         return countRaw(query, null);
     }
@@ -288,6 +294,7 @@ public abstract class Data {
      *            A complete SQL query. Cannot be NULL!
      * @return true, if there are rows, false if not.
      */
+    @SuppressWarnings("unused")
     public boolean hasRaw(String query) {
         return hasRaw(query, null);
     }

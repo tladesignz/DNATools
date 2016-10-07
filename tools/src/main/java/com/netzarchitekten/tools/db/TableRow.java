@@ -32,7 +32,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Parcel;
 
 /**
@@ -43,6 +42,7 @@ import android.os.Parcel;
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class TableRow {
 
     protected boolean mStored = false;
@@ -50,12 +50,6 @@ public abstract class TableRow {
     protected boolean mChanged = false;
 
     protected Table mTable = null;
-
-    /**
-     * Explicit empty constructor, otherwise compiler cries.
-     */
-    protected TableRow() {
-    }
 
     /**
      * Set the table.
@@ -73,6 +67,7 @@ public abstract class TableRow {
      * @param cursor
      *              A {@link Cursor} pointing to this row's data in the database.
      */
+    @SuppressWarnings("UnusedParameters")
     protected TableRow(Cursor cursor) {
         mStored = true;
     }
@@ -85,6 +80,7 @@ public abstract class TableRow {
      * @param cursor
      *              A {@link Cursor} pointing to this row's data in the database.
      */
+    @SuppressWarnings("UnusedParameters")
     protected TableRow(Table table, Cursor cursor) {
         this(table);
 
@@ -109,6 +105,7 @@ public abstract class TableRow {
      * @return the table belonging to this row or NULL in case this object was created
      *         without one and it wasn't set, yet.
      */
+    @SuppressWarnings("unused")
     public Table getTable() {
         return mTable;
     }
@@ -131,6 +128,7 @@ public abstract class TableRow {
      * @return true, if this row is present in the database already.
      * @see #isSaved()
      */
+    @SuppressWarnings("unused")
     public boolean isStored() {
         return mStored;
     }
@@ -138,6 +136,7 @@ public abstract class TableRow {
     /**
      * @return true, if this object was modified via its setters.
      */
+    @SuppressWarnings("unused")
     public boolean isChanged() {
         return mChanged;
     }
@@ -151,6 +150,7 @@ public abstract class TableRow {
      * @see #isStored()
      * @see #isChanged()
      */
+    @SuppressWarnings("unused")
     public boolean isSaved() {
         return mStored && !mChanged;
     }
@@ -182,6 +182,7 @@ public abstract class TableRow {
      *         the INSERT failed. Ignore this on compound primary keys. It won't
      *         make sense in that case.
      */
+    @SuppressWarnings("unused")
     protected Long save(ContentValues values, Long... ids) {
         return Long.valueOf(save(values, toStrings(ids)));
     }
@@ -250,6 +251,7 @@ public abstract class TableRow {
      * @return this object for fluency.
      * @see #save(ContentValues, String...)
      */
+    @SuppressWarnings("unused")
     public abstract TableRow save();
 
     /**
@@ -260,6 +262,7 @@ public abstract class TableRow {
      *            used in the where argument.
      * @return true on success, false on failure.
      */
+    @SuppressWarnings("unused")
     protected boolean delete(Object... ids) {
         boolean deleted = false;
 
@@ -279,6 +282,7 @@ public abstract class TableRow {
      *
      * @return true on success, false on failure.
      */
+    @SuppressWarnings("unused")
     public abstract boolean delete();
 
     /**
@@ -302,6 +306,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getInt(int)
      */
+    @SuppressWarnings("unused")
     public static boolean getBoolean(Cursor c, String column) {
         int idx = getIndex(c, column);
 
@@ -326,6 +331,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getInt(int)
      */
+    @SuppressWarnings("unused")
     public static int getInt(Cursor c, String column) {
         int idx = getIndex(c, column);
 
@@ -350,6 +356,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getInt(int)
      */
+    @SuppressWarnings("unused")
     public static Integer getIntObj(Cursor c, String column) {
         int idx = getIndex(c, column);
 
@@ -374,6 +381,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getLong(int)
      */
+    @SuppressWarnings("unused")
     public static long getLong(Cursor c, String column) {
         int idx = getIndex(c, column);
 
@@ -421,6 +429,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getFloat(int)
      */
+    @SuppressWarnings("unused")
     public static float getFloat(Cursor c, String column) {
         int idx = getIndex(c, column);
 
@@ -444,6 +453,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getFloat(int)
      */
+    @SuppressWarnings("unused")
     public static Float getFloatObj(Cursor c, String column) {
         int idx = getIndex(c, column);
 
@@ -468,6 +478,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getDouble(int)
      */
+    @SuppressWarnings("unused")
     public static double getDouble(Cursor c, String column) {
         int idx = getIndex(c, column);
 
@@ -491,6 +502,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getDouble(int)
      */
+    @SuppressWarnings("unused")
     public static Double getDoubleObj(Cursor c, String column) {
         int idx = getIndex(c, column);
 
@@ -514,6 +526,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getString(int)
      */
+    @SuppressWarnings("unused")
     public static String getString(Cursor c, String column) {
         int idx = getIndex(c, column);
 
@@ -540,6 +553,7 @@ public abstract class TableRow {
      * @see Cursor#getColumnIndex(String)
      * @see Cursor#getLong(int)
      */
+    @SuppressWarnings("unused")
     public static Calendar getCalendar(Cursor c, String column) {
         Long timestamp = getLongObj(c, column);
 

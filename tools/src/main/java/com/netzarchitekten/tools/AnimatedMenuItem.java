@@ -48,6 +48,7 @@ import android.view.animation.RotateAnimation;
  *      >Stack Overflow: Animated menu item “jumps” when
  *      animation starts</a>
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class AnimatedMenuItem {
 
     private final MenuItem mItem;

@@ -42,6 +42,7 @@ import java.util.List;
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class Table<T extends TableRow> extends Data {
 
     protected final Class<T> mTableRowClass;
@@ -56,6 +57,7 @@ public abstract class Table<T extends TableRow> extends Data {
      * @param db
      *              The database.
      */
+    @SuppressWarnings("unused")
     public static void onCreate(SQLiteDatabase db) {
         throw new RuntimeException("Missing implementation!");
     }
@@ -70,6 +72,7 @@ public abstract class Table<T extends TableRow> extends Data {
      * @param newVersion
      *              The new database version.
      */
+    @SuppressWarnings("unused")
     public static void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         throw new RuntimeException("Missing implementation!");
     }
@@ -125,6 +128,7 @@ public abstract class Table<T extends TableRow> extends Data {
      * @see <a href="http://stackoverflow.com/questions/3403909/get-generic-type-of-class-at-runtime"
      * >Stackoverflow</a>
      */
+    @SuppressWarnings("unused")
     public Table(Class<T> tableRowClass, Context context, String baseUri, String name,
                  String uniqueRowKey) {
         this(tableRowClass, context, baseUri, name, new String[] { uniqueRowKey });
@@ -133,6 +137,7 @@ public abstract class Table<T extends TableRow> extends Data {
     /**
      * @return the URI for this table.
      */
+    @SuppressWarnings("unused")
     public Uri getUri() {
         return mUri;
     }
@@ -140,6 +145,7 @@ public abstract class Table<T extends TableRow> extends Data {
     /**
      * @return the selection {@link String} which identifies a row in this table uniquely.
      */
+    @SuppressWarnings("unused")
     public String getUniqueRowSelection() {
         return mUniqueRowSelection;
     }
@@ -156,7 +162,9 @@ public abstract class Table<T extends TableRow> extends Data {
      *
      * @return a new, unstored {@link TableRow} subclass.
      */
+    @SuppressWarnings("unused")
     public T newRow() {
+        //noinspection TryWithIdenticalCatches
         try {
             return mTableRowClass.getConstructor(this.getClass()).newInstance(this);
         } catch (NoSuchMethodException e) {
@@ -192,7 +200,9 @@ public abstract class Table<T extends TableRow> extends Data {
      *
      * @return a {@link TableRow} subclass containing values from the database.
      */
+    @SuppressWarnings("unused")
     public T newRow(Cursor c) {
+        //noinspection TryWithIdenticalCatches
         try {
             return mTableRowClass.getConstructor(this.getClass(), Cursor.class).newInstance(this, c);
         } catch (NoSuchMethodException e) {
@@ -245,6 +255,7 @@ public abstract class Table<T extends TableRow> extends Data {
 
         List<T> rows = new ArrayList<>();
 
+        //noinspection TryWithIdenticalCatches
         try {
             Cursor c = mCr.query(mUri, projection, selection, selectionArgs, sortOrder);
 
@@ -397,6 +408,7 @@ public abstract class Table<T extends TableRow> extends Data {
      *
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
+    @SuppressWarnings("unused")
     protected List<T> getList() {
         return getList(null);
     }
@@ -516,6 +528,7 @@ public abstract class Table<T extends TableRow> extends Data {
      *
      * @return a {@link TableRow}, possibly null.
      */
+    @SuppressWarnings("unused")
     protected T get(String[] selectionArgs) {
         return get(mUniqueRowSelection, selectionArgs);
     }
@@ -531,6 +544,7 @@ public abstract class Table<T extends TableRow> extends Data {
      *
      * @return a {@link TableRow}, possibly null.
      */
+    @SuppressWarnings("unused")
     protected T get() {
         return get((String) null);
     }
@@ -580,6 +594,7 @@ public abstract class Table<T extends TableRow> extends Data {
      *
      * @return the number of all rows.
      */
+    @SuppressWarnings("unused")
     public int count() {
         return count(null);
     }
@@ -632,6 +647,7 @@ public abstract class Table<T extends TableRow> extends Data {
      *
      * @return true, if there are rows, false if not.
      */
+    @SuppressWarnings("unused")
     public boolean has() {
         return has((String) null);
     }
@@ -666,6 +682,7 @@ public abstract class Table<T extends TableRow> extends Data {
      *            (excluding the WHERE itself).
      * @return the number of rows updated.
      */
+    @SuppressWarnings("unused")
     public int update(ContentValues values, String where) {
         return update(values, where, null);
     }
@@ -709,6 +726,7 @@ public abstract class Table<T extends TableRow> extends Data {
      *            (excluding the WHERE itself).
      * @return the number of rows deleted.
      */
+    @SuppressWarnings("unused")
     public int delete(String where) {
         return delete(where, null);
     }

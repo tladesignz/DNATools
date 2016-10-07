@@ -35,6 +35,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class SQLitePreloadHelper extends SQLiteOpenHelper {
 
     /**

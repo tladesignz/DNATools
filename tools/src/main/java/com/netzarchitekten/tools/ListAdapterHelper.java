@@ -53,6 +53,7 @@ import android.widget.SimpleAdapter;
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class ListAdapterHelper {
 
     public final SimpleAdapter adapter;

@@ -48,6 +48,7 @@ import android.text.TextUtils;
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class Log {
 
     /**

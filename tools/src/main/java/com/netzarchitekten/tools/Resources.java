@@ -49,6 +49,7 @@ import java.util.Locale;
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class Resources {
 
     private final android.content.res.Resources mResources;

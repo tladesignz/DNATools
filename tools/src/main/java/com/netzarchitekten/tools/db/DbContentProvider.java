@@ -45,6 +45,7 @@ public abstract class DbContentProvider extends ContentProvider {
     /**
      * Pseudo-table which allows raw SELECT queries.
      */
+    @SuppressWarnings("unused")
     protected static final int RAW_QUERY = Integer.MAX_VALUE;
 
     /**
