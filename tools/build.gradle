@@ -1,14 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         minSdkVersion 11
-        targetSdkVersion 24
-        versionCode 26
-        versionName "6.4.2"
+        targetSdkVersion 25
+        versionCode 27
+        versionName '6.5.0'
     }
 
     buildTypes {
@@ -34,7 +34,7 @@ ext {
     siteUrl = 'https://github.com/tladesignz/DNATools'
     gitUrl = 'https://github.com/tladesignz/DNATools.git'
 
-    libraryVersion = '6.4.2'
+    libraryVersion = '6.5.0'
 
     developerId = 'berhart'
     developerName = 'Benjamin Erhart'
