@@ -46,11 +46,16 @@ import java.util.Locale;
  * <p>
  * Contains a static and an OO interface.
  * </p>
+ * <p>
+ * Also, provides facilities to work with a different locale, then set by the user.
+ * </p>
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Resources {
+
+    private final Context mContext;
 
     private final android.content.res.Resources mResources;
 
@@ -60,7 +65,8 @@ public class Resources {
      *            {@link android.content.res.Resources} of the app.
      */
     public Resources(Context context) {
-        mResources = context.getResources();
+        mContext = context;
+        mResources = mContext.getResources();
     }
 
     /**
@@ -77,7 +83,7 @@ public class Resources {
     @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")
     public int getColor(int id) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             return mResources.getColor(id, null);
 
         return mResources.getColor(id);
@@ -96,7 +102,7 @@ public class Resources {
     @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")
     public Drawable getDrawable(int id) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             return mResources.getDrawable(id, null);
 
         return mResources.getDrawable(id);
@@ -110,7 +116,7 @@ public class Resources {
     @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")
     public Locale getPrimaryLocale() {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             return mResources.getConfiguration().getLocales().get(0);
 
         return mResources.getConfiguration().locale;
@@ -130,14 +136,17 @@ public class Resources {
      * @param newLocale
      *            The new {@link Locale}.
      * @return this object for fluency.
+     * @deprecated Using this side-effect is deprecated. Use {@link #getContextWithNewLocale(Locale)}
+     *      instead, which dynamically uses a better method, if available.
      */
     @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")
+    @Deprecated
     public Resources setLocale(Locale newLocale) {
         if (!getPrimaryLocale().equals(newLocale)) {
             Configuration newConfig = new Configuration(mResources.getConfiguration());
 
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 newConfig.setLocales(new LocaleList(newLocale));
             } else {
                 newConfig.locale = newLocale;
@@ -164,23 +173,120 @@ public class Resources {
      * @param newLocale
      *            The new locale as {@link String}.
      * @return this object for fluency.
+     * @deprecated Using this side-effect is deprecated. Use {@link #getContextWithNewLocale(String)}
+     *      instead, which dynamically uses a better method, if available.
      */
+    @SuppressWarnings("deprecation")
+    @Deprecated
     public Resources setLocale(String newLocale) {
         return setLocale(new Locale(newLocale));
+    }
+
+    /**
+     * <p>
+     * Creates a new {@link Context} which uses a given {@link Locale} instead of the default one
+     * used.
+     * </p>
+     * <p>
+     * As a compatibility fallback for API < 17, where this is not possible, instead injects the
+     * given Locale into the <b>current</b> context and returns that.
+     * </p>
+     * <p>
+     * <b>ATTENTION</b>: Because of the fallback, make sure to call
+     * {@link #giveUpNewLocaleContext()} at the  end of your usage and beware, that if you
+     * don't or hold on too long to this, it can happen on API < 17, that your complete app will
+     * show in a different language!
+     * </p>
+     *
+     * @param newLocale
+     *            The new {@link Locale}.
+     * @return a {@link Context} using the given {@link Locale}.
+     */
+    @SuppressWarnings("deprecation")
+    public Context getContextWithNewLocale(Locale newLocale) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            Configuration override = new Configuration();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                override.setLocales(new LocaleList(newLocale));
+            } else {
+                override.locale = newLocale;
+            }
+
+            return mContext.createConfigurationContext(override);
+        }
+
+        // Fallback for older versions, using the side-effect.
+
+        setLocale(newLocale);
+
+        return mContext;
+    }
+
+    /**
+     * <p>
+     * Creates a new {@link Context} which uses a given locale instead of the default one
+     * used.
+     * </p>
+     * <p>
+     * As a compatibility fallback for API < 17, where this is not possible, instead injects the
+     * given Locale into the <b>current</b> context and returns that.
+     * </p>
+     * <p>
+     * <b>ATTENTION</b>: Because of the fallback, make sure to call
+     * {@link #giveUpNewLocaleContext()} at the  end of your usage and beware, that if you
+     * don't or hold on too long to this, it can happen on API < 17, that your complete app will
+     * show in a different language!
+     * </p>
+     *
+     * @param newLocale
+     *            The new locale as a {@link String}.
+     * @return a {@link Context} using the given locale.
+     */
+    public Context getContextWithNewLocale(String newLocale) {
+        return getContextWithNewLocale(new Locale(newLocale));
     }
 
     /**
      * Reset the current primary locale to the originally set device's locale using a
      * side-effect of
      * {@link android.content.res.Resources#Resources(AssetManager, DisplayMetrics, Configuration)}.
+     *
      * @return this object for fluency.
+     * @deprecated Using this side-effect is deprecated. Use {@link #giveUpNewLocaleContext()}
+     *      instead, which dynamically uses a better method, if available.
      */
+    @SuppressWarnings("deprecation")
+    @Deprecated
     public Resources resetLocale() {
         new android.content.res.Resources(mResources.getAssets(),
             mResources.getDisplayMetrics(),
             mResources.getConfiguration());
 
         return this;
+    }
+
+    /**
+     * <p>
+     * Give up the context with the new locale.
+     * </p>
+     * <p>
+     * Actually, this does nothing on API >= 17, since we just have to stop using the given
+     * {@link Context}. Below, though, it resets the language on the main context to the original
+     * one, since that is the workaround for older API versions.
+     * </p>
+     *
+     * @return NULL, which you must assign to your local context variable.
+     */
+    @SuppressWarnings("deprecation")
+    public Context giveUpNewLocaleContext() {
+        // Only, if we had to use the locale-injection into the normal context, this is useful.
+        // Otherwise, we just do nothing.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            resetLocale();
+        }
+
+        return null;
     }
 
     /**
@@ -228,7 +334,12 @@ public class Resources {
      * @param newLocale
      *            The new {@link Locale}.
      * @return this object for fluency.
+     * @deprecated Using this side-effect is deprecated. Use
+     *      {@link #getContextWithNewLocale(Context, Locale)} instead, which dynamically uses a
+     *      better method, if available.
      */
+    @SuppressWarnings("deprecation")
+    @Deprecated
     public static Resources setLocale(Context context, Locale newLocale) {
         return new Resources(context).setLocale(newLocale);
     }
@@ -240,9 +351,68 @@ public class Resources {
      * @param newLocale
      *            The new locale as {@link String}.
      * @return this object for fluency.
+     * @deprecated Using this side-effect is deprecated. Use
+     *      {@link #getContextWithNewLocale(Context, String)} instead, which dynamically uses a
+     *      better method, if available.
      */
+    @SuppressWarnings("deprecation")
+    @Deprecated
     public static Resources setLocale(Context context, String newLocale) {
         return new Resources(context).setLocale(newLocale);
+    }
+
+    /**
+     * <p>
+     * Creates a new {@link Context} which uses a given {@link Locale} instead of the default one
+     * used.
+     * </p>
+     * <p>
+     * As a compatibility fallback for API < 17, where this is not possible, instead injects the
+     * given Locale into the <b>current</b> context and returns that.
+     * </p>
+     * <p>
+     * <b>ATTENTION</b>: Because of the fallback, make sure to call
+     * {@link #giveUpNewLocaleContext(Context)} at the  end of your usage and beware, that
+     * if you  don't or hold on too long to this, it can happen on API < 17, that your complete app
+     * will show in a different language!
+     * </p>
+     *
+     * @param context
+     *            A context object to access the
+     *            {@link android.content.res.Resources} of the app.
+     * @param newLocale
+     *            The new {@link Locale}.
+     * @return a {@link Context} using the given {@link Locale}.
+     */
+    public static Context getContextWithNewLocale(Context context, Locale newLocale) {
+        return new Resources(context).getContextWithNewLocale(newLocale);
+    }
+
+    /**
+     * <p>
+     * Creates a new {@link Context} which uses a given locale instead of the default one
+     * used.
+     * </p>
+     * <p>
+     * As a compatibility fallback for API < 17, where this is not possible, instead injects the
+     * given Locale into the <b>current</b> context and returns that.
+     * </p>
+     * <p>
+     * <b>ATTENTION</b>: Because of the fallback, make sure to call
+     * {@link #giveUpNewLocaleContext(Context)} at the  end of your usage and beware, that
+     * if you  don't or hold on too long to this, it can happen on API < 17, that your complete app
+     * will show in a different language!
+     * </p>
+     *
+     * @param context
+     *            A context object to access the
+     *            {@link android.content.res.Resources} of the app.
+     * @param newLocale
+     *            The new locale as a {@link String}.
+     * @return a {@link Context} using the given locale.
+     */
+    public static Context getContextWithNewLocale(Context context, String newLocale) {
+        return new Resources(context).getContextWithNewLocale(newLocale);
     }
 
     /**
@@ -250,8 +420,23 @@ public class Resources {
      *            A context object to access the
      *            {@link android.content.res.Resources} of the app.
      * @return this object for fluency.
+     * @deprecated Using this side-effect is deprecated. Use
+     *      {@link #giveUpNewLocaleContext(Context)} instead, which dynamically uses a
+     *      better method, if available.
      */
+    @SuppressWarnings("deprecation")
     public static Resources resetLocale(Context context) {
         return new Resources(context).resetLocale();
+    }
+
+    /**
+     * @param context
+     *            A context object to access the
+     *            {@link android.content.res.Resources} of the app.
+     *
+     * @return NULL, which you must assign to your local context variable.
+     */
+    public static Context giveUpNewLocaleContext(Context context) {
+        return new Resources(context).giveUpNewLocaleContext();
     }
 }
