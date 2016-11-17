@@ -188,13 +188,13 @@ public class Resources {
      * used.
      * </p>
      * <p>
-     * As a compatibility fallback for API < 17, where this is not possible, instead injects the
+     * As a compatibility fallback for API &lt; 17, where this is not possible, instead injects the
      * given Locale into the <b>current</b> context and returns that.
      * </p>
      * <p>
      * <b>ATTENTION</b>: Because of the fallback, make sure to call
      * {@link #giveUpNewLocaleContext()} at the  end of your usage and beware, that if you
-     * don't or hold on too long to this, it can happen on API < 17, that your complete app will
+     * don't or hold on too long to this, it can happen on API &lt; 17, that your complete app will
      * show in a different language!
      * </p>
      *
@@ -229,13 +229,13 @@ public class Resources {
      * used.
      * </p>
      * <p>
-     * As a compatibility fallback for API < 17, where this is not possible, instead injects the
+     * As a compatibility fallback for API &lt; 17, where this is not possible, instead injects the
      * given Locale into the <b>current</b> context and returns that.
      * </p>
      * <p>
      * <b>ATTENTION</b>: Because of the fallback, make sure to call
      * {@link #giveUpNewLocaleContext()} at the  end of your usage and beware, that if you
-     * don't or hold on too long to this, it can happen on API < 17, that your complete app will
+     * don't or hold on too long to this, it can happen on API &lt; 17, that your complete app will
      * show in a different language!
      * </p>
      *
@@ -271,7 +271,7 @@ public class Resources {
      * Give up the context with the new locale.
      * </p>
      * <p>
-     * Actually, this does nothing on API >= 17, since we just have to stop using the given
+     * Actually, this does nothing on API &gt;= 17, since we just have to stop using the given
      * {@link Context}. Below, though, it resets the language on the main context to the original
      * one, since that is the workaround for older API versions.
      * </p>
@@ -367,14 +367,14 @@ public class Resources {
      * used.
      * </p>
      * <p>
-     * As a compatibility fallback for API < 17, where this is not possible, instead injects the
+     * As a compatibility fallback for API &lt; 17, where this is not possible, instead injects the
      * given Locale into the <b>current</b> context and returns that.
      * </p>
      * <p>
      * <b>ATTENTION</b>: Because of the fallback, make sure to call
      * {@link #giveUpNewLocaleContext(Context)} at the  end of your usage and beware, that
-     * if you  don't or hold on too long to this, it can happen on API < 17, that your complete app
-     * will show in a different language!
+     * if you  don't or hold on too long to this, it can happen on API &lt; 17, that your complete
+     * app will show in a different language!
      * </p>
      *
      * @param context
@@ -394,14 +394,14 @@ public class Resources {
      * used.
      * </p>
      * <p>
-     * As a compatibility fallback for API < 17, where this is not possible, instead injects the
+     * As a compatibility fallback for API &lt; 17, where this is not possible, instead injects the
      * given Locale into the <b>current</b> context and returns that.
      * </p>
      * <p>
      * <b>ATTENTION</b>: Because of the fallback, make sure to call
      * {@link #giveUpNewLocaleContext(Context)} at the  end of your usage and beware, that
-     * if you  don't or hold on too long to this, it can happen on API < 17, that your complete app
-     * will show in a different language!
+     * if you  don't or hold on too long to this, it can happen on API &lt; 17, that your complete
+     * app will show in a different language!
      * </p>
      *
      * @param context
