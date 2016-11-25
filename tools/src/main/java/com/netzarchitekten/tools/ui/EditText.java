@@ -26,6 +26,7 @@
 package com.netzarchitekten.tools.ui;
 
 import android.content.Context;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
@@ -33,7 +34,9 @@ import android.view.View;
 /**
  * <p>
  * A {@link android.widget.EditText} that has a proper
- * {@link #setReadOnly(boolean)} mode.
+ * {@link #setReadOnly(boolean)} mode, can connect a {@link OnKeyPreImeListener} and a
+ * {@link OnTextChangedListener} which replaces the need for the annoying {@link TextWatcher},
+ * which doesn't have a reference to the actual changed object in its callbacks.
  * </p>
  * <p>
  * In order to use this, you have to declare EditTexts as
@@ -45,6 +48,7 @@ import android.view.View;
  *      "https://github.com/delight-im/Android-BaseLib/blob/62299c79d100e38627600907e755d563de072234/Source/src/im/delight/android/baselib/UI.java#L264">
  *      GitHub: delight-im/Android-BaseLib</a>
  */
+@SuppressWarnings("unused")
 public class EditText extends android.widget.EditText {
 
     /**
@@ -67,7 +71,33 @@ public class EditText extends android.widget.EditText {
         boolean onKeyPreIme(View v, KeyEvent event);
     }
 
+    /**
+     * Interface definition for a callback to be invoked when a the text was changed.
+     */
+    public interface OnTextChangedListener {
+
+        /**
+         * Called when the text is changed. Within text, the lengthAfter characters beginning at
+         * start have just replaced old text that had length lengthBefore.
+         *
+         * @param v
+         *            The view where the key was pressed.
+         * @param text
+         *            The text the TextView is displaying.
+         * @param start
+         *            The offset of the start of the range of the text that was modified.
+         * @param lengthBefore
+         *            The length of the former text that has been replaced.
+         * @param lengthAfter
+         *            The length of the replacement modified text.
+         */
+        void onTextChanged(View v, CharSequence text, int start, int lengthBefore,
+                              int lengthAfter);
+    }
+
     protected OnKeyPreImeListener mOnKeyPreImeListener;
+
+    protected OnTextChangedListener mOnTextChangedListener;
 
     /**
      * @param context
@@ -141,5 +171,36 @@ public class EditText extends android.widget.EditText {
      */
     public void setOnKeyPreImeListener(OnKeyPreImeListener l) {
         mOnKeyPreImeListener = l;
+    }
+
+    /**
+     * Call a {@link OnTextChangedListener}, if connected.
+     *
+     * @param text
+     *            The text the TextView is displaying.
+     * @param start
+     *            The offset of the start of the range of the text that was modified.
+     * @param lengthBefore
+     *            The length of the former text that has been replaced.
+     * @param lengthAfter
+     *            The length of the replacement modified text.
+     */
+    @Override
+    public void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
+        if (mOnTextChangedListener != null) {
+            mOnTextChangedListener.onTextChanged(this, text, start, lengthBefore, lengthAfter);
+        }
+
+        super.onTextChanged(text, start, lengthBefore, lengthAfter);
+    }
+
+    /**
+     * Register a callback to be invoked when the text was changed.
+     *
+     * @param l
+     *            The callback that will run.
+     */
+    public void setOnTextChangedListener(OnTextChangedListener l) {
+        mOnTextChangedListener = l;
     }
 }
