@@ -76,6 +76,14 @@ public abstract class Data {
     }
 
     /**
+     * @return the URI for raw queries.
+     */
+    @SuppressWarnings("unused")
+    public Uri getRawUri() {
+        return mRawUri;
+    }
+
+    /**
      * Execute a raw query.
      *
      * @param query
