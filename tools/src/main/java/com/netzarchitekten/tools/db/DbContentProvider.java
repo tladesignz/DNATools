@@ -140,7 +140,7 @@ public abstract class DbContentProvider extends ContentProvider {
         String table = uri.getLastPathSegment();
 
         if (Data.RAW_QUERY.equals(table)) {
-            throw new IllegalArgumentException("Inserts only on allowed on Table models.");
+            throw new IllegalArgumentException("Insert only allowed on Table models.");
         }
 
         long id = getDb().insert(table, null, values);
@@ -166,7 +166,7 @@ public abstract class DbContentProvider extends ContentProvider {
         String table = uri.getLastPathSegment();
 
         if (Data.RAW_QUERY.equals(table)) {
-            throw new IllegalArgumentException("Updates only on allowed on Table models.");
+            throw new IllegalArgumentException("Update only allowed on Table models.");
         }
 
         int rows = getDb().update(table, values, selection, selectionArgs);
@@ -189,7 +189,7 @@ public abstract class DbContentProvider extends ContentProvider {
         String table = uri.getLastPathSegment();
 
         if (Data.RAW_QUERY.equals(table)) {
-            throw new IllegalArgumentException("Delete only on allowed on Table models.");
+            throw new IllegalArgumentException("Delete only allowed on Table models.");
         }
 
         int rows = getDb().delete(table, selection, selectionArgs);
