@@ -36,7 +36,6 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 
@@ -220,19 +219,14 @@ public abstract class BaseAuthenticator {
         if (mServerCertKeyStore == null) {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
-            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            keyStore.load(null, null);
+            KeyStoreFactory ksf = new KeyStoreFactory();
 
             // Load all certificates and add to a keystore.
             for (String file : getCertFiles()) {
-                InputStream caIs = mContext.getAssets().open(file);
-                Certificate ca = cf.generateCertificate(caIs);
-                keyStore.setCertificateEntry(file, ca);
-
-                FileUtils.close(caIs);
+                ksf.addX509CertificateFromAssets(mContext, file);
             }
 
-            mServerCertKeyStore = keyStore;
+            mServerCertKeyStore = ksf.getKeyStore();
         }
 
         return mServerCertKeyStore;
@@ -297,13 +291,10 @@ public abstract class BaseAuthenticator {
         String password = getUserCertificatePassword();
 
         if (mUserCertKeyStore == null) {
-            KeyStore keystore = KeyStore.getInstance("PKCS12");
-            keystore.load(certificate, password.toCharArray());
-
-            FileUtils.close(certificate);
-
-            mUserCertKeyStore = keystore;
+            mUserCertKeyStore = new KeyStoreFactory(certificate, password).getKeyStore();
         }
+
+        FileUtils.close(certificate);
 
         return mUserCertKeyStore;
     }
