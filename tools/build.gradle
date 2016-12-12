@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 11
         targetSdkVersion 25
-        versionCode 29
-        versionName '6.6.1'
+        versionCode 30
+        versionName '7.0.0'
     }
 
     buildTypes {
@@ -34,7 +34,7 @@ ext {
     siteUrl = 'https://github.com/tladesignz/DNATools'
     gitUrl = 'https://github.com/tladesignz/DNATools.git'
 
-    libraryVersion = '6.6.1'
+    libraryVersion = '7.0.0'
 
     developerId = 'berhart'
     developerName = 'Benjamin Erhart'

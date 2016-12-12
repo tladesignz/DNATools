@@ -30,6 +30,8 @@ dependency, because I won't guarantee, that updates won't break your code...
 
 ## Usage
 
+If you still want to use this library directly, you can do so in the following way:
+
 In your project's `build.gradle` file:
 
 ```gradle
@@ -52,7 +54,7 @@ In your module's `build.gradle` file:
 ```gradle
 dependencies {
     ...
-    compile 'com.netzarchitekten:tools:6.2.1'
+    compile 'com.netzarchitekten:tools:7.0.0'
     ...
 }
 
