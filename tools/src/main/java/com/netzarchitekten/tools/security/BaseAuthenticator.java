@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.netzarchitekten.tools.ssl;
+package com.netzarchitekten.tools.security;
 
 import android.content.Context;
 
@@ -32,19 +32,15 @@ import com.netzarchitekten.tools.FileUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyManagementException;
-import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 
 import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 
 /**
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
@@ -148,9 +144,13 @@ public abstract class BaseAuthenticator {
         KeyStoreException, CertificateException, IOException, UnrecoverableKeyException {
 
         if (mSocketFactory == null) {
-            TrustManager[] tms = getCertFiles() == null ? null : getTrustManagers();
+            TrustManager[] tms = getCertFiles() == null
+                ? null
+                : getServerCertKeyStore().getTrustManagers();
 
-            KeyManager[] kms = getUserCertificate() == null ? null : getKeyManagers();
+            KeyManager[] kms = getUserCertificate() == null
+                ? null
+                : getUserCertKeyStore().getKeyManagers();
 
             // Create the SSL context.
             SSLContext sslcontext = SSLContext.getInstance("TLS");
@@ -160,39 +160,6 @@ public abstract class BaseAuthenticator {
         }
 
         return mSocketFactory;
-    }
-
-    /**
-     * Load all certificates from the "assets" folder and fill
-     * a {@link TrustManagerFactory} with it.
-     *
-     * @return the list of {@link TrustManager}s.
-     * @throws NoSuchAlgorithmException
-     *            if there is no valid default algorithm for {@link TrustManager}s.
-     * @throws KeyStoreException
-     *            if a {@link TrustManager} could not be initialized or if there is no valid
-     *            default algorithm for {@link KeyStore}s.
-     * @throws CertificateException
-     *            if the system does not support X.509 certificates, if any of the certificates in
-     *            the keystore could not be loaded or if certificate files could not be parsed.
-     * @throws IOException
-     *            if a certificate file could not be read,
-     *            if there is an I/O or format problem with the keystore data, if a password is
-     *            required but not given, or if the given password was incorrect.
-     *            If the error is due to a wrong password, the cause of the IOException should be
-     *            an {@link UnrecoverableKeyException}.
-     */
-    protected TrustManager[] getTrustManagers() throws NoSuchAlgorithmException, KeyStoreException,
-        CertificateException, IOException {
-
-        KeyStore keyStore = getServerCertKeyStore();
-
-        // Init trust managers from keystore.
-        TrustManagerFactory tmf = TrustManagerFactory
-            .getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        tmf.init(keyStore);
-
-        return tmf.getTrustManagers();
     }
 
     /**
@@ -217,52 +184,16 @@ public abstract class BaseAuthenticator {
     protected KeyStore getServerCertKeyStore()
         throws CertificateException, KeyStoreException, NoSuchAlgorithmException, IOException {
         if (mServerCertKeyStore == null) {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-
-            KeyStoreFactory ksf = new KeyStoreFactory();
+            mServerCertKeyStore = new KeyStore();
 
             // Load all certificates and add to a keystore.
             for (String file : getCertFiles()) {
-                ksf.addX509CertificateFromAssets(mContext, file);
+                mServerCertKeyStore.addCertificateFromAssets(mContext, CertificateHelper.TYPE_X509, file);
+                mServerCertKeyStore.addX509CertificateFromAssets(mContext, file);
             }
-
-            mServerCertKeyStore = ksf.getKeyStore();
         }
 
         return mServerCertKeyStore;
-    }
-
-    /**
-     * Create a {@link KeyManager} from the private key.
-     *
-     * @return an array of {@link KeyManager}s.
-     * @throws NoSuchAlgorithmException
-     *            if there is no valid default algorithm for {@link KeyManager}s.
-     * @throws KeyStoreException
-     *            if the system does not support PKCS12 key stores or if the {@link KeyManager}
-     *            could not be initialized.
-     * @throws UnrecoverableKeyException
-     *            if the key cannot be recovered (e.g. the given password is wrong).
-     * @throws CertificateException
-     *            if any of the certificates in the keystore could not be loaded.
-     * @throws IOException
-     *            if there is an I/O or format problem with the keystore data, if a password is
-     *            required but not given, or if the given password was incorrect.
-     *            If the error is due to a wrong password, the cause of the IOException should be
-     *            an UnrecoverableKeyException.
-     */
-    protected KeyManager[] getKeyManagers() throws NoSuchAlgorithmException, KeyStoreException,
-        UnrecoverableKeyException, CertificateException, IOException {
-
-        KeyManagerFactory kmf;
-
-        KeyStore keystore = getUserCertKeyStore();
-
-        // Create key manager (this one is responsible for authenticating us against the server.)
-        kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        kmf.init(keystore, null);
-
-        return kmf.getKeyManagers();
     }
 
     /**
@@ -291,7 +222,7 @@ public abstract class BaseAuthenticator {
         String password = getUserCertificatePassword();
 
         if (mUserCertKeyStore == null) {
-            mUserCertKeyStore = new KeyStoreFactory(certificate, password).getKeyStore();
+            mUserCertKeyStore = new KeyStore(certificate, password);
         }
 
         FileUtils.close(certificate);

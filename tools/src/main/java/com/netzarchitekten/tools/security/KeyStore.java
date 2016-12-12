@@ -23,77 +23,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.netzarchitekten.tools.ssl;
+package com.netzarchitekten.tools.security;
 
 import android.content.Context;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+
 /**
  * <p>
- * A factory class to help create an empty {@link KeyStore} or from a complete PKCS12 keystore file
- * and add certificates from Android's asset folder or from strings to it.
+ * A wrapper class to help create an empty {@link java.security.KeyStore} or from a complete PKCS12
+ * keystore file, add certificates from Android's asset folder or from strings to it and create
+ * {@link TrustManager}s and {@link KeyManager}s from it.
  * </p>
- * <p>
- * Create fresh keystore containing one X.509 certificate from an asset file:
- * </p>
- * <pre>
- *     KeyStore ks = new KeyStoreFactory()
- *         .addX509CertificateFromAssets(context, "foobar.crt")
- *         .getKeyStore();
- * </pre>
- * <p>
- * Create fresh keystore containing one X.509 certificate contained in a string (e.g. from the
- * database):
- * </p>
- * <pre>
- *     KeyStore ks = new KeyStoreFactory()
- *         .addX509CertificateFromString(certificate)
- *         .getKeyStore();
- * </pre>
- * <p>
- * Create fresh keystore containing a certificate of your type contained in a string (e.g. from the
- * database):
- * </p>
- * <pre>
- *     KeyStore ks = new KeyStoreFactory()
- *         .addCertificateFromString(certificateType, alias, certificate)
- *         .getKeyStore();
- * </pre>
- * <p>
- * Create a keystore from a PKCS12 file:
- * </p>
- * <pre>
- *     KeyStore ks = new KeyStoreFactory(pkcs12file, password)
- *         .getKeyStore();
- * </pre>
- * <p>
- * Combine as you wish!
- * </p>
+ *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class KeyStoreFactory {
+public class KeyStore {
 
-    private static final String TYPE_PKCS12 = "PKCS12";
+    public static final String TYPE_PKCS12 = "PKCS12";
 
-    private final KeyStore mKeyStore;
+    private final java.security.KeyStore mKeyStore;
 
     /**
      * Create a {@link KeyStore} from an {@link InputStream}.
      *
      * @param keyStoreType
-     *            A keystore type suitable for {@link KeyStore#getInstance(String)}. May be NULL,
-     *            in which case the {@link KeyStore#getDefaultType()} will be used.
+     *            A keystore type suitable for {@link java.security.KeyStore#getInstance(String)}.
+     *            May be NULL, in which case the {@link java.security.KeyStore#getDefaultType()}
+     *            will be used.
      * @param keyStore
      *            The {@link InputStream} of a {@link KeyStore} file. May be NULL, in which case,
      *            an empty key store will be created.
@@ -111,11 +83,11 @@ public class KeyStoreFactory {
      *            If the error is due to a wrong password, the cause of the IOException should be
      *            an UnrecoverableKeyException.
      */
-    public KeyStoreFactory(String keyStoreType, InputStream keyStore, char[] password)
+    public KeyStore(String keyStoreType, InputStream keyStore, char[] password)
         throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
 
-        mKeyStore = KeyStore.getInstance(keyStoreType == null
-            ? KeyStore.getDefaultType()
+        mKeyStore = java.security.KeyStore.getInstance(keyStoreType == null
+            ? java.security.KeyStore.getDefaultType()
             : keyStoreType);
 
         mKeyStore.load(keyStore, password);
@@ -141,7 +113,7 @@ public class KeyStoreFactory {
      *            If the error is due to a wrong password, the cause of the IOException should be
      *            an UnrecoverableKeyException.
      */
-    public KeyStoreFactory(InputStream keyStore, char[] password)
+    public KeyStore(InputStream keyStore, char[] password)
         throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
 
         this(TYPE_PKCS12, keyStore, password);
@@ -167,7 +139,7 @@ public class KeyStoreFactory {
      *            If the error is due to a wrong password, the cause of the IOException should be
      *            an UnrecoverableKeyException.
      */
-    public KeyStoreFactory(InputStream keyStore, String password)
+    public KeyStore(InputStream keyStore, String password)
         throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
 
         this(keyStore, password.toCharArray());
@@ -193,7 +165,7 @@ public class KeyStoreFactory {
      *            If the error is due to a wrong password, the cause of the IOException should be
      *            an UnrecoverableKeyException.
      */
-    public KeyStoreFactory(String keyStore, String password)
+    public KeyStore(String keyStore, String password)
         throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
 
         this(new ByteArrayInputStream(keyStore.getBytes("UTF-8")), password);
@@ -219,14 +191,14 @@ public class KeyStoreFactory {
      *            If the error is due to a wrong password, the cause of the IOException should be
      *            an UnrecoverableKeyException.
      */
-    public KeyStoreFactory(String keyStore, char[] password)
+    public KeyStore(String keyStore, char[] password)
         throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
 
         this(new ByteArrayInputStream(keyStore.getBytes("UTF-8")), password);
     }
 
     /**
-     * Creates an empty {@link KeyStore} using {@link KeyStore#getDefaultType()}.
+     * Creates an empty {@link KeyStore} using {@link java.security.KeyStore#getDefaultType()}.
      *
      * @throws KeyStoreException
      *            if no Provider supports a KeyStoreSpi implementation for the PKCS type.
@@ -240,7 +212,7 @@ public class KeyStoreFactory {
      *            If the error is due to a wrong password, the cause of the IOException should be
      *            an UnrecoverableKeyException.
      */
-    public KeyStoreFactory()
+    public KeyStore()
         throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
 
         this(null, null, null);
@@ -251,11 +223,7 @@ public class KeyStoreFactory {
      * Add a certificate to the {@link KeyStore} from Android's assets folder.
      * </p>
      * <p>
-     * Will call {@link #addX509CertificateFromAssets(Context, String)} internally, if you define
-     * certificateType as "X.509"!
-     * </p>
-     * <p>
-     * The fileName will become the certificate alias, except, if you use the X.509 type!
+     * The fileName will become the certificate alias!
      * </p>
      *
      * @param context
@@ -275,14 +243,12 @@ public class KeyStoreFactory {
      *            does not identify an entry containing a trusted certificate, or this operation
      *            fails for some other reason.
      */
-    public KeyStoreFactory addCertificateFromAssets(Context context, String certificateType,
+    public KeyStore addCertificateFromAssets(Context context, String certificateType,
                                                     String fileName)
         throws CertificateException, IOException, KeyStoreException {
 
-        if (certificateType != null && Certificates.TYPE_X509.equals(certificateType.toUpperCase()))
-            return addX509CertificateFromAssets(context, fileName);
-
-        Certificate c = Certificates.create(certificateType, context.getAssets().open(fileName));
+        Certificate c = CertificateHelper.create(certificateType,
+            context.getAssets().open(fileName));
 
         mKeyStore.setCertificateEntry(fileName, c);
 
@@ -294,7 +260,7 @@ public class KeyStoreFactory {
      * Add a X.509 certificate to the {@link KeyStore} from Android's assets folder.
      * </p>
      * <p>
-     * The certificates hex serial will become the alias!
+     * The fileName will become the certificate alias!
      * </p>
      *
      * @param context
@@ -312,12 +278,12 @@ public class KeyStoreFactory {
      *            does not identify an entry containing a trusted certificate, or this operation
      *            fails for some other reason.
      */
-    public KeyStoreFactory addX509CertificateFromAssets(Context context, String fileName)
+    public KeyStore addX509CertificateFromAssets(Context context, String fileName)
         throws CertificateException, IOException, KeyStoreException {
 
-        X509Certificate c = Certificates.create(context.getAssets().open(fileName));
+        X509Certificate c = CertificateHelper.create(context.getAssets().open(fileName));
 
-        mKeyStore.setCertificateEntry(c.getSerialNumber().toString(16), c);
+        mKeyStore.setCertificateEntry(fileName, c);
 
         return this;
     }
@@ -327,11 +293,7 @@ public class KeyStoreFactory {
      * Add a certificate to the {@link KeyStore} from a {@link String}.
      * </p>
      * <p>
-     * Will call {@link #addX509CertificateFromString(String)} internally, if you define
-     * certificateType as "X.509"!
-     * </p>
-     * <p>
-     * The provided alias will become the certificate alias, except, if you use the X.509 type!
+     * The provided alias will become the certificate alias!
      * </p>
      *
      * @param certificateType
@@ -349,14 +311,11 @@ public class KeyStoreFactory {
      *            does not identify an entry containing a trusted certificate, or this operation
      *            fails for some other reason.
      */
-    public KeyStoreFactory addCertificateFromString(String certificateType, String alias,
+    public KeyStore addCertificateFromString(String certificateType, String alias,
                                                     String certificate)
         throws CertificateException, KeyStoreException {
 
-        if (certificateType != null && Certificates.TYPE_X509.equals(certificateType.toUpperCase()))
-            return addX509CertificateFromString(certificate);
-
-        Certificate c = Certificates.create(certificateType, certificate);
+        Certificate c = CertificateHelper.create(certificateType, certificate);
 
         mKeyStore.setCertificateEntry(alias, c);
 
@@ -368,7 +327,39 @@ public class KeyStoreFactory {
      * Add a X.509 certificate to the {@link KeyStore} from a {@link String}.
      * </p>
      * <p>
-     * The certificates hex serial will become the alias!
+     * If NOT NULL, the provided alias will become the certificate alias,
+     * else the certificate's hex serial will become the alias!
+     * </p>
+     *
+     * @param alias
+     *            The designated certificate alias.
+     * @param certificate
+     *            The {@link String} representation of a {@link Certificate}.
+     * @return this object for fluency.
+     * @throws CertificateException
+     *            if no Provider supports a CertificateFactorySpi implementation for the specified
+     *            type OR on certificate file parsing errors.
+     * @throws KeyStoreException
+     *            if the keystore has not been initialized, or the given alias already exists and
+     *            does not identify an entry containing a trusted certificate, or this operation
+     *            fails for some other reason.
+     */
+    public KeyStore addX509CertificateFromString(String alias, String certificate)
+        throws CertificateException, KeyStoreException {
+
+        X509Certificate c = CertificateHelper.create(certificate);
+
+        mKeyStore.setCertificateEntry(alias == null ? c.getSerialNumber().toString(16) : alias, c);
+
+        return this;
+    }
+
+    /**
+     * <p>
+     * Add a X.509 certificate to the {@link KeyStore} from a {@link String}.
+     * </p>
+     * <p>
+     * The certificate's hex serial will become the alias!
      * </p>
      *
      * @param certificate
@@ -382,20 +373,153 @@ public class KeyStoreFactory {
      *            does not identify an entry containing a trusted certificate, or this operation
      *            fails for some other reason.
      */
-    public KeyStoreFactory addX509CertificateFromString(String certificate)
+    public KeyStore addX509CertificateFromString(String certificate)
+        throws CertificateException, KeyStoreException {
+        return addX509CertificateFromString(null, certificate);
+    }
+
+    /**
+     * <p>
+     * Add a certificate to the {@link KeyStore} from an {@link InputStream}.
+     * </p>
+     * <p>
+     * The provided alias will become the certificate alias!
+     * </p>
+     * <p>
+     * The file handle will be closed automatically.
+     * </p>
+     *
+     * @param certificateType
+     *            A certificate type suitable for {@link CertificateFactory#getInstance(String)}.
+     * @param alias
+     *            The designated certificate alias.
+     * @param certificate
+     *            The {@link InputStream} pointing to a {@link Certificate}.
+     * @return this object for fluency.
+     * @throws CertificateException
+     *            if no Provider supports a CertificateFactorySpi implementation for the specified
+     *            type OR on certificate file parsing errors.
+     * @throws KeyStoreException
+     *            if the keystore has not been initialized, or the given alias already exists and
+     *            does not identify an entry containing a trusted certificate, or this operation
+     *            fails for some other reason.
+     */
+    public KeyStore addCertificateFromStream(String certificateType, String alias,
+                                             InputStream certificate)
         throws CertificateException, KeyStoreException {
 
-        X509Certificate c = Certificates.create(certificate);
+        Certificate c = CertificateHelper.create(certificateType, certificate);
 
-        mKeyStore.setCertificateEntry(c.getSerialNumber().toString(16), c);
+        mKeyStore.setCertificateEntry(alias, c);
 
         return this;
     }
 
     /**
-     * @return the built {@link KeyStore}.
+     * <p>
+     * Add a X.509 certificate to the {@link KeyStore} from a {@link String}.
+     * </p>
+     * <p>
+     * If NOT NULL, the provided alias will become the certificate alias,
+     * else the certificate's hex serial will become the alias!
+     * </p>
+     * <p>
+     * The file handle will be closed automatically.
+     * </p>
+     *
+     * @param alias
+     *            The designated certificate alias.
+     * @param certificate
+     *            The {@link InputStream} pointing to a {@link X509Certificate}.
+     * @return this object for fluency.
+     * @throws CertificateException
+     *            if no Provider supports a CertificateFactorySpi implementation for the specified
+     *            type OR on certificate file parsing errors.
+     * @throws KeyStoreException
+     *            if the keystore has not been initialized, or the given alias already exists and
+     *            does not identify an entry containing a trusted certificate, or this operation
+     *            fails for some other reason.
      */
-    public KeyStore getKeyStore() {
+    public KeyStore addX509CertificateFromStream(String alias, InputStream certificate)
+        throws CertificateException, KeyStoreException {
+
+        X509Certificate c = CertificateHelper.create(certificate);
+
+        mKeyStore.setCertificateEntry(alias == null ? c.getSerialNumber().toString(16) : alias, c);
+
+        return this;
+    }
+
+    /**
+     * <p>
+     * Add a X.509 certificate to the {@link KeyStore} from a {@link String}.
+     * </p>
+     * <p>
+     * The certificate's hex serial will become the alias!
+     * </p>
+     * <p>
+     * The file handle will be closed automatically.
+     * </p>
+     *
+     * @param certificate
+     *            The {@link String} representation of a {@link Certificate}.
+     * @return this object for fluency.
+     * @throws CertificateException
+     *            if no Provider supports a CertificateFactorySpi implementation for the specified
+     *            type OR on certificate file parsing errors.
+     * @throws KeyStoreException
+     *            if the keystore has not been initialized, or the given alias already exists and
+     *            does not identify an entry containing a trusted certificate, or this operation
+     *            fails for some other reason.
+     */
+    public KeyStore addX509CertificateFromStream(InputStream certificate)
+        throws CertificateException, KeyStoreException {
+        return addX509CertificateFromStream(null, certificate);
+    }
+
+    /**
+     * @return the underlying {@link java.security.KeyStore}.
+     */
+    public java.security.KeyStore getUnderlyingKeyStore() {
         return mKeyStore;
+    }
+
+    /**
+     * @return an array of {@link KeyManager}s using our {@link KeyStore} with the
+     *            {@link KeyManagerFactory#getDefaultAlgorithm()}.
+     * @throws NoSuchAlgorithmException
+     *            if no Provider supports a KeyManagerFactorySpi implementation for the specified
+     *            algorithm.
+     * @throws UnrecoverableKeyException
+     *            if the key cannot be recovered (e.g. the given password is wrong).
+     * @throws KeyStoreException
+     *            if this operation fails.
+     */
+    public KeyManager[] getKeyManagers() throws NoSuchAlgorithmException, UnrecoverableKeyException,
+        KeyStoreException {
+
+        KeyManagerFactory kmf = KeyManagerFactory
+            .getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(mKeyStore, null);
+
+        return kmf.getKeyManagers();
+    }
+
+    /**
+     * @return an array of {@link TrustManager}s using our {@link KeyStore} with the
+     *            {@link TrustManagerFactory#getDefaultAlgorithm()}.
+     * @throws NoSuchAlgorithmException
+     *            if there is no valid default algorithm for {@link TrustManager}s.
+     * @throws KeyStoreException
+     *            if a {@link TrustManager} could not be initialized or if there is no valid
+     *            default algorithm for {@link KeyStore}s.
+     */
+    protected TrustManager[] getTrustManagers() throws NoSuchAlgorithmException, KeyStoreException {
+
+        TrustManagerFactory tmf = TrustManagerFactory
+            .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(mKeyStore);
+
+        return tmf.getTrustManagers();
     }
 }

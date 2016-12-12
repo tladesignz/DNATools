@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.netzarchitekten.tools.ssl;
+package com.netzarchitekten.tools.security;
 
 import com.netzarchitekten.tools.FileUtils;
 
@@ -42,7 +42,7 @@ import java.security.cert.X509Certificate;
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class Certificates {
+public class CertificateHelper {
 
     /**
      * Well-known type for X.509 certificates.
@@ -50,7 +50,24 @@ public class Certificates {
     public static final String TYPE_X509 = "X.509";
 
     /**
+     * Header for a BASE64 encoded certificate. Is needed for decoding and will be prepended to
+     * a certificate provided as {@link String} if not contained in it, already.
+     */
+    public static final String BEGIN_CERTIFICATE = "-----BEGIN CERTIFICATE-----";
+
+    /**
+     * Footer for a BASE64 encoded certificate. Is needed for decoding and will be appended to
+     * a certificate provided as {@link String} if not contained in it, already.
+     */
+    public static final String END_CERTIFICATE = "-----END CERTIFICATE-----";
+
+    /**
+     * <p>
      * Create a {@link Certificate} from an {@link InputStream}.
+     * </p>
+     * <p>
+     * The file handle will be closed automatically.
+     * </p>
      *
      * @param certificateType
      *            A certificate type suitable for {@link CertificateFactory#getInstance(String)}.
@@ -73,7 +90,13 @@ public class Certificates {
     }
 
     /**
-     * Create a {@link Certificate} from a {@link String}.
+     * <p>
+     * Create a {@link Certificate} from a {@link String} containing a BASE64 encoded certificate.
+     * </p>
+     * <p>
+     * if {@link #BEGIN_CERTIFICATE} and/or {@link #END_CERTIFICATE} header/footer is not contained
+     * in the provided string, they will be prepended/appended automatically!
+     * </p>
      *
      * @param certificateType
      *            A certificate type suitable for {@link CertificateFactory#getInstance(String)}.
@@ -89,6 +112,14 @@ public class Certificates {
 
         byte[] bytes = new byte[0];
 
+        if (!certificate.toUpperCase().contains(BEGIN_CERTIFICATE)) {
+            certificate = BEGIN_CERTIFICATE + "\n" + certificate;
+        }
+
+        if (!certificate.toUpperCase().contains(END_CERTIFICATE)) {
+            certificate += "\n" + END_CERTIFICATE;
+        }
+
         try {
             bytes = certificate.getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -99,7 +130,12 @@ public class Certificates {
     }
 
     /**
+     * <p>
      * Create a {@link X509Certificate} from an {@link InputStream}.
+     * </p>
+     * <p>
+     * The file handle will be closed automatically.
+     * </p>
      *
      * @param is
      *            The {@link InputStream} of a {@link X509Certificate} file.
@@ -113,7 +149,14 @@ public class Certificates {
     }
 
     /**
-     * Create a {@link X509Certificate} from a {@link String}.
+     * <p>
+     * Create a {@link X509Certificate} from a {@link String} containing a BASE64 encoded
+     * certificate.
+     * </p>
+     * <p>
+     * if {@link #BEGIN_CERTIFICATE} and/or {@link #END_CERTIFICATE} header/footer is not contained
+     * in the provided string, they will be prepended/appended automatically!
+     * </p>
      *
      * @param certificate
      *            The {@link String} representation of a {@link X509Certificate}.
