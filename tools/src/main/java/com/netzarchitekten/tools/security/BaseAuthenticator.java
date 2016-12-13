@@ -99,6 +99,21 @@ public abstract class BaseAuthenticator {
 
     /**
      * <p>
+     * Override this to use a {@link MultiTrustManager} using the default Android keystore AND the
+     * provided certificates.
+     * </p>
+     * <p>
+     * DEFAULT is <b>false</b>.
+     * </p>
+     *
+     * @return true, if a {@link MultiTrustManager} should be used, or false if not.
+     */
+    protected boolean useMultiTrustManager() {
+        return false;
+    }
+
+    /**
+     * <p>
      * Return the user certificate password.
      * </p>
      * <p>
@@ -146,7 +161,9 @@ public abstract class BaseAuthenticator {
         if (mSocketFactory == null) {
             TrustManager[] tms = getCertFiles() == null
                 ? null
-                : getServerCertKeyStore().getTrustManagers();
+                : (useMultiTrustManager()
+                    ? getServerCertKeyStore().getMultiTrustManager()
+                    : getServerCertKeyStore().getTrustManagers());
 
             KeyManager[] kms = getUserCertificate() == null
                 ? null
@@ -188,7 +205,6 @@ public abstract class BaseAuthenticator {
 
             // Load all certificates and add to a keystore.
             for (String file : getCertFiles()) {
-                mServerCertKeyStore.addCertificateFromAssets(mContext, CertificateHelper.TYPE_X509, file);
                 mServerCertKeyStore.addX509CertificateFromAssets(mContext, file);
             }
         }

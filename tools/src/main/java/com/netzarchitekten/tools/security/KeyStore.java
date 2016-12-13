@@ -511,8 +511,7 @@ public class KeyStore {
      * @throws NoSuchAlgorithmException
      *            if there is no valid default algorithm for {@link TrustManager}s.
      * @throws KeyStoreException
-     *            if a {@link TrustManager} could not be initialized or if there is no valid
-     *            default algorithm for {@link KeyStore}s.
+     *            if a {@link TrustManager} could not be initialized for this {@link KeyStore}.
      */
     protected TrustManager[] getTrustManagers() throws NoSuchAlgorithmException, KeyStoreException {
 
@@ -521,5 +520,19 @@ public class KeyStore {
         tmf.init(mKeyStore);
 
         return tmf.getTrustManagers();
+    }
+
+    /**
+     * @return an array which contains exactly one {@link MultiTrustManager} which uses this
+     *            keystore <b>and</b> Android's built-in keystore.
+     * @throws NoSuchAlgorithmException
+     *            if there is no valid default algorithm for {@link TrustManager}s.
+     * @throws KeyStoreException
+     *            if a {@link TrustManager} could not be initialized for a given {@link KeyStore}.
+     */
+    protected MultiTrustManager[] getMultiTrustManager()
+        throws NoSuchAlgorithmException, KeyStoreException {
+
+        return new MultiTrustManager[] { new MultiTrustManager(this) };
     }
 }
