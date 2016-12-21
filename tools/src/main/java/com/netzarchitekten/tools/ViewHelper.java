@@ -65,56 +65,56 @@ public class ViewHelper {
     /**
      * Instanciate this class and call {@link #setView(View)} immediately.
      *
-     * @param v
+     * @param view
      *            A {@link View}.
      */
-    public ViewHelper(View v) {
-        setView(v);
+    public ViewHelper(View view) {
+        setView(view);
     }
 
     /**
      * Instanciate this class and call {@link #setView(ViewParent)} immediately.
      *
-     * @param vp
+     * @param viewParent
      *            A {@link ViewParent}.
      */
-    public ViewHelper(ViewParent vp) {
-        setView(vp);
+    public ViewHelper(ViewParent viewParent) {
+        setView(viewParent);
     }
 
     /**
      * Instanciate this class and call {@link #setActivity(Activity)}
      * immediately.
      *
-     * @param a
+     * @param activity
      *            An {@link Activity}.
      */
-    public ViewHelper(Activity a) {
-        setActivity(a);
+    public ViewHelper(Activity activity) {
+        setActivity(activity);
     }
 
     /**
      * Instanciate this class and call {@link #setActivity(Activity)} and
      * {@link #setView(int)} immediately.
      *
-     * @param a
+     * @param activity
      *            An {@link Activity}.
      * @param resId
      *            A resource ID.
      */
-    public ViewHelper(Activity a, int resId) {
-        setActivity(a).setView(resId);
+    public ViewHelper(Activity activity, int resId) {
+        setActivity(activity).setView(resId);
     }
 
     /**
      * Set the activity to the given one. Needed for {@link #setView(int)}.
      *
-     * @param a
+     * @param activity
      *            An {@link Activity}.
      * @return this object for fluency.
      */
-    public ViewHelper setActivity(Activity a) {
-        mActivity = a;
+    public ViewHelper setActivity(Activity activity) {
+        mActivity = activity;
 
         return this;
     }
@@ -122,12 +122,12 @@ public class ViewHelper {
     /**
      * Set the view to work on to the given {@link View}.
      *
-     * @param v
+     * @param view
      *            A {@link View}.
      * @return this object for fluency.
      */
-    public ViewHelper setView(View v) {
-        mView = v;
+    public ViewHelper setView(View view) {
+        mView = view;
 
         return this;
     }
@@ -142,12 +142,12 @@ public class ViewHelper {
      * here.
      * </p>
      *
-     * @param vp
+     * @param viewParent
      *            A {@link ViewParent}.
      * @return this object for fluency.
      */
-    public ViewHelper setView(ViewParent vp) {
-        mView = (View) vp;
+    public ViewHelper setView(ViewParent viewParent) {
+        mView = (View) viewParent;
 
         return this;
     }
@@ -174,30 +174,29 @@ public class ViewHelper {
     }
 
     /**
-     * Hides a {@link View}.
+     * Hides one or more {@link View}s.
      *
-     * @param v
-     *            A {@link View} to show.
+     * @param views
+     *            One or more {@link View}s to hide.
      */
-    public static void hide(View v) {
-        toggle(v, false);
+    public static void hide(View... views) {
+        toggle(false, views);
     }
 
     /**
      * <p>
-     * Hides a {@link ViewParent}.
+     * Hides one or more {@link ViewParent}s.
      * </p>
      * <p>
-     * ATTENTION: This can only work, if the {@link ViewParent} is also a
-     * {@link View}! This method merely spares you the cast. No other magic
-     * here.
+     * ATTENTION: This can only work, if the {@link ViewParent}s are also {@link View}s!
+     * This method merely spares you the cast. No other magic here.
      * </p>
      *
-     * @param vp
-     *            A {@link ViewParent} to show or hide.
+     * @param viewParents
+     *            One or more {@link ViewParent}s to hide.
      */
-    public static void hide(ViewParent vp) {
-        toggle(vp, false);
+    public static void hide(ViewParent... viewParents) {
+        toggle(false, viewParents);
     }
 
     /**
@@ -210,30 +209,33 @@ public class ViewHelper {
     }
 
     /**
-     * Sets a {@link View} invisible.
+     * Sets one or more {@link View}s invisible.
      *
-     * @param v
-     *            A {@link View} to cloak.
+     * @param views
+     *            One or more {@link View}s to cloak.
      */
-    public static void cloak(View v) {
-        new ViewHelper(v).cloak();
+    public static void cloak(View... views) {
+        for (View v : views) {
+            new ViewHelper(v).cloak();
+        }
     }
 
     /**
      * <p>
-     * Sets a {@link ViewParent} invisible.
+     * Sets one or more {@link ViewParent}s invisible.
      * </p>
      * <p>
-     * ATTENTION: This can only work, if the {@link ViewParent} is also a
-     * {@link View}! This method merely spares you the cast. No other magic
-     * here.
+     * ATTENTION: This can only work, if the {@link ViewParent}s are also {@link View}s!
+     * This method merely spares you the cast. No other magic here.
      * </p>
      *
-     * @param vp
-     *            A {@link ViewParent} to cloak.
+     * @param viewParents
+     *            One ore more {@link ViewParent}s to cloak.
      */
-    public static void cloak(ViewParent vp) {
-        new ViewHelper(vp).cloak();
+    public static void cloak(ViewParent... viewParents) {
+        for (ViewParent vp : viewParents) {
+            new ViewHelper(vp).cloak();
+        }
     }
 
     /**
@@ -248,30 +250,29 @@ public class ViewHelper {
     }
 
     /**
-     * Shows a {@link View}.
+     * Shows one ore more {@link View}s.
      *
-     * @param v
-     *            A {@link View} to show.
+     * @param views
+     *            One ore more {@link View}s to show.
      */
-    public static void show(View v) {
-        toggle(v, true);
+    public static void show(View... views) {
+        toggle(true, views);
     }
 
     /**
      * <p>
-     * Shows a {@link ViewParent}.
+     * Shows one ore more {@link ViewParent}s.
      * </p>
      * <p>
-     * ATTENTION: This can only work, if the {@link ViewParent} is also a
-     * {@link View}! This method merely spares you the cast. No other magic
-     * here.
+     * ATTENTION: This can only work, if the {@link ViewParent}s are also {@link View}s!
+     * This method merely spares you the cast. No other magic here.
      * </p>
      *
-     * @param vp
-     *            A {@link ViewParent} to show or hide.
+     * @param viewParents
+     *            One or more {@link ViewParent}s to show.
      */
-    public static void show(ViewParent vp) {
-        toggle(vp, true);
+    public static void show(ViewParent... viewParents) {
+        toggle(true, viewParents);
     }
 
     /**
@@ -300,13 +301,27 @@ public class ViewHelper {
     /**
      * Shows or hides a {@link View}, depending on the toggle parameter.
      *
-     * @param v
+     * @param view
      *            A {@link View} to show or hide.
      * @param toggle
      *            Show if true, hide if false.
      */
-    public static void toggle(View v, boolean toggle) {
-        new ViewHelper(v).toggle(toggle);
+    public static void toggle(View view, boolean toggle) {
+        new ViewHelper(view).toggle(toggle);
+    }
+
+    /**
+     * Shows or hides one or more {@link View}s, depending on the toggle parameter.
+     *
+     * @param toggle
+     *            Show if true, hide if false.
+     * @param views
+     *            One or more {@link View}s to show or hide.
+     */
+    public static void toggle(boolean toggle, View... views) {
+        for (View v : views) {
+            toggle(v, toggle);
+        }
     }
 
     /**
@@ -314,17 +329,36 @@ public class ViewHelper {
      * Shows or hides a {@link ViewParent}, depending on the toggle parameter.
      * </p>
      * <p>
-     * ATTENTION: This can only work, if the {@link ViewParent} is also a
-     * {@link View}! This method merely spares you the cast. No other magic
-     * here.
+     * ATTENTION: This can only work, if the {@link ViewParent} is also a {@link View}!
+     * This method merely spares you the cast. No other magic here.
      * </p>
      *
-     * @param vp
+     * @param viewParent
      *            A {@link ViewParent} to show or hide.
      * @param toggle
      *            Show if true, hide if false.
      */
-    public static void toggle(ViewParent vp, boolean toggle) {
-        new ViewHelper(vp).toggle(toggle);
+    public static void toggle(ViewParent viewParent, boolean toggle) {
+        new ViewHelper(viewParent).toggle(toggle);
+    }
+
+    /**
+     * <p>
+     * Shows or hides one or more {@link ViewParent}s, depending on the toggle parameter.
+     * </p>
+     * <p>
+     * ATTENTION: This can only work, if the {@link ViewParent}s are also {@link View}s!
+     * This method merely spares you the cast. No other magic here.
+     * </p>
+     *
+     * @param toggle
+     *            Show if true, hide if false.
+     * @param viewParents
+     *            One or more {@link ViewParent}s to show or hide.
+     */
+    public static void toggle(boolean toggle, ViewParent... viewParents) {
+        for (ViewParent vp : viewParents) {
+            toggle(vp, toggle);
+        }
     }
 }
