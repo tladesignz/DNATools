@@ -81,7 +81,7 @@ public class KeyStore {
      *            if there is an I/O or format problem with the keystore data, if a password is
      *            required but not given, or if the given password was incorrect.
      *            If the error is due to a wrong password, the cause of the IOException should be
-     *            an UnrecoverableKeyException.
+     *            an {@link UnrecoverableKeyException}.
      */
     public KeyStore(String keyStoreType, InputStream keyStore, char[] password)
         throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
@@ -111,7 +111,7 @@ public class KeyStore {
      *            if there is an I/O or format problem with the keystore data, if a password is
      *            required but not given, or if the given password was incorrect.
      *            If the error is due to a wrong password, the cause of the IOException should be
-     *            an UnrecoverableKeyException.
+     *            an {@link UnrecoverableKeyException}.
      */
     public KeyStore(InputStream keyStore, char[] password)
         throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
@@ -137,16 +137,16 @@ public class KeyStore {
      *            if there is an I/O or format problem with the keystore data, if a password is
      *            required but not given, or if the given password was incorrect.
      *            If the error is due to a wrong password, the cause of the IOException should be
-     *            an UnrecoverableKeyException.
+     *            an {@link UnrecoverableKeyException}.
      */
     public KeyStore(InputStream keyStore, String password)
         throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
 
-        this(keyStore, password.toCharArray());
+        this(keyStore, password == null ? null : password.toCharArray());
     }
 
     /**
-     * Create a {@link KeyStore} from an {@link InputStream} pointing to a file in PKCS12 format.
+     * Create a {@link KeyStore} from a {@link String} containing the keystore in PKCS12 format.
      *
      * @param keyStore
      *            The {@link KeyStore} as a {@link String}. May be NULL, in which case,
@@ -163,16 +163,17 @@ public class KeyStore {
      *            if there is an I/O or format problem with the keystore data, if a password is
      *            required but not given, or if the given password was incorrect.
      *            If the error is due to a wrong password, the cause of the IOException should be
-     *            an UnrecoverableKeyException.
+     *            an {@link UnrecoverableKeyException}.
      */
     public KeyStore(String keyStore, String password)
         throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
 
-        this(new ByteArrayInputStream(keyStore.getBytes("UTF-8")), password);
+        this(keyStore == null ? null : new ByteArrayInputStream(keyStore.getBytes("UTF-8")),
+            password);
     }
 
     /**
-     * Create a {@link KeyStore} from an {@link InputStream} pointing to a file in PKCS12 format.
+     * Create a {@link KeyStore} from a {@link String} containing the keystore in PKCS12 format.
      *
      * @param keyStore
      *            The {@link KeyStore} as a {@link String}. May be NULL, in which case,
@@ -189,12 +190,13 @@ public class KeyStore {
      *            if there is an I/O or format problem with the keystore data, if a password is
      *            required but not given, or if the given password was incorrect.
      *            If the error is due to a wrong password, the cause of the IOException should be
-     *            an UnrecoverableKeyException.
+     *            an {@link UnrecoverableKeyException}.
      */
     public KeyStore(String keyStore, char[] password)
         throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
 
-        this(new ByteArrayInputStream(keyStore.getBytes("UTF-8")), password);
+        this(keyStore == null ? null : new ByteArrayInputStream(keyStore.getBytes("UTF-8")),
+            password);
     }
 
     /**
@@ -207,10 +209,7 @@ public class KeyStore {
      * @throws NoSuchAlgorithmException
      *            if the algorithm used to check the integrity of the keystore cannot be found.
      * @throws IOException
-     *            if there is an I/O or format problem with the keystore data, if a password is
-     *            required but not given, or if the given password was incorrect.
-     *            If the error is due to a wrong password, the cause of the IOException should be
-     *            an UnrecoverableKeyException.
+     *            if there is an I/O or format problem with the keystore data.
      */
     public KeyStore()
         throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
