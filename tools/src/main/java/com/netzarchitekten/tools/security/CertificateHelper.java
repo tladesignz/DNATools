@@ -36,7 +36,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 /**
- * Helper class to create a {@link Certificate} or an {@link X509Certificate}from an
+ * Helper class to create a {@link Certificate} or an {@link X509Certificate} from an
  * {@link InputStream} or a {@link String}.
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
@@ -75,7 +75,7 @@ public class CertificateHelper {
      *            The {@link InputStream} of a {@link Certificate} file.
      * @return a {@link Certificate}.
      * @throws CertificateException
-     *            if no Provider supports a CertificateFactorySpi implementation for the specified
+     *            if no provider supports a CertificateFactorySpi implementation for the specified
      *            type OR on certificate file parsing errors.
      */
     public static Certificate create(String certificateType, InputStream is)
@@ -104,7 +104,7 @@ public class CertificateHelper {
      *            The {@link String} representation of a {@link Certificate}.
      * @return a {@link Certificate}.
      * @throws CertificateException
-     *            if no Provider supports a CertificateFactorySpi implementation for the specified
+     *            if no provider supports a CertificateFactorySpi implementation for the specified
      *            type OR on certificate string parsing errors.
      */
     public static Certificate create(String certificateType, String certificate)
@@ -141,7 +141,7 @@ public class CertificateHelper {
      *            The {@link InputStream} of a {@link X509Certificate} file.
      * @return a {@link X509Certificate}.
      * @throws CertificateException
-     *            if no Provider supports a CertificateFactorySpi implementation for the X.509
+     *            if no provider supports a CertificateFactorySpi implementation for the X.509
      *            type OR on certificate file parsing errors.
      */
     public static X509Certificate create(InputStream is) throws CertificateException {
@@ -162,7 +162,7 @@ public class CertificateHelper {
      *            The {@link String} representation of a {@link X509Certificate}.
      * @return a {@link X509Certificate}.
      * @throws CertificateException
-     *            if no Provider supports a CertificateFactorySpi implementation for the X.509
+     *            if no provider supports a CertificateFactorySpi implementation for the X.509
      *            type OR on certificate string parsing errors.
      */
     public static X509Certificate create(String certificate) throws CertificateException {
