@@ -114,6 +114,22 @@ public abstract class BaseAuthenticator {
 
     /**
      * <p>
+     * Override this to define your own list of supported SSL/TLS protocols.
+     * </p>
+     * <p>
+     * This can be used to switch on TLS 1.1 and 1.2 on Android API 16 - 19, which have that
+     * disabled by default.
+     * </p>
+     *
+     * @return a list of supported protocols.
+     * @see TlsSocketFactory
+     */
+    protected String[] getSupportedProtocols() {
+        return null;
+    }
+
+    /**
+     * <p>
      * Return the user certificate password.
      * </p>
      * <p>
@@ -169,11 +185,7 @@ public abstract class BaseAuthenticator {
                 ? null
                 : getUserCertKeyStore().getKeyManagers();
 
-            // Create the SSL context.
-            SSLContext sslcontext = SSLContext.getInstance("TLS");
-            sslcontext.init(kms, tms, null);
-
-            mSocketFactory = sslcontext.getSocketFactory();
+            mSocketFactory = new TlsSocketFactory(getSupportedProtocols(), kms, tms);
         }
 
         return mSocketFactory;
