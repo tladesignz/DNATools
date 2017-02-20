@@ -276,7 +276,7 @@ public class Resources {
      * one, since that is the workaround for older API versions.
      * </p>
      *
-     * @return NULL, which you must assign to your local context variable.
+     * @return the original {@link Context}, which you might assign to your local context variable.
      */
     @SuppressWarnings("deprecation")
     public Context giveUpNewLocaleContext() {
@@ -286,7 +286,7 @@ public class Resources {
             resetLocale();
         }
 
-        return null;
+        return mContext;
     }
 
     /**
