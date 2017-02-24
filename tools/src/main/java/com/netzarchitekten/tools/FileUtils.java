@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Die Netzarchitekten e.U., Benjamin Erhart
+ * Copyright (c) 2015 - 2017 Die Netzarchitekten e.U., Benjamin Erhart
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,10 +25,15 @@
  */
 package com.netzarchitekten.tools;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 
 /**
  * <p>
@@ -56,6 +61,7 @@ import java.io.OutputStream;
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class FileUtils {
 
     /**
@@ -95,5 +101,56 @@ public class FileUtils {
                 }
             }
         }
+    }
+
+    /**
+     * <p>
+     * Returns the specified {@link SharedPreferences} {@link File} using the internal
+     * <code>Context#getSharedPrefsFile</code> via reflection.
+     * </p>
+     * <p>
+     * If that fails, tries a semi-hardcoded fallback.
+     * </p>
+     * <p>
+     * Actual existence is not guaranteed!
+     * </p>
+     *
+     * @param context
+     *            Your current {@link Context}.
+     * @param name
+     *            The name of the {@link SharedPreferences} file.
+     * @return a {@link File} object pointing to the actual {@link SharedPreferences} file.
+     */
+    public static File getSharedPrefsFile(Context context, String name) {
+        File file;
+
+        try {
+            Method method = context.getClass().getMethod("getSharedPrefsFile", String.class);
+            file = (File) method.invoke(context, name);
+        } catch (Exception e) {
+            file = new File(context.getFilesDir(), String.format("../shared_prefs/%s.xml", name));
+        }
+
+        return file;
+    }
+
+    /**
+     * <p>
+     * Returns the specified default {@link SharedPreferences} {@link File} using the internal
+     * <code>Context#getSharedPrefsFile</code> via reflection.
+     * </p>
+     * <p>
+     * If that fails, tries a semi-hardcoded fallback.
+     * </p>
+     * <p>
+     * Actual existence is not guaranteed!
+     * </p>
+     *
+     * @param context
+     *            Your current {@link Context}.
+     * @return a {@link File} object pointing to the actual {@link SharedPreferences} file.
+     */
+    public static File getDefaultSharedPrefsFile(Context context) {
+        return getSharedPrefsFile(context, String.format("%s_preferences", context.getPackageName()));
     }
 }
