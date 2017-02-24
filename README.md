@@ -54,7 +54,7 @@ In your module's `build.gradle` file:
 ```gradle
 dependencies {
     ...
-    compile 'com.netzarchitekten:tools:7.3.1'
+    compile 'com.netzarchitekten:tools:7.4.0'
     ...
 }
 
