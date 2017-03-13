@@ -110,15 +110,12 @@ public abstract class Data {
     }
 
     /**
-     * Fetch the selected rows with a raw (fully specified) query.
+     * Fetch the selected rows from a given cursor.
      *
      * @param tableRowClass
      *            The {@link TableRow} subclass to instantiate with the row data.
-     * @param query
-     *            A complete SQL query. Cannot be NULL!
-     * @param selectionArgs You may include ?s in selection, which will be replaced by the values
-     *                      from selectionArgs, in the order that they appear in the selection.
-     *                      The values will be bound as Strings.
+     * @param c
+     *            A cursor pointing to a query result.
      * @param limit A maximum amount of result entries.
      * @param <T>
      *            The {@link TableRow} subclass to instantiate with the row data. The designated
@@ -126,19 +123,17 @@ public abstract class Data {
      *            {@link TableRow#TableRow(Cursor)}, otherwise, your app will crash here!
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
      */
-    public <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, String query,
-                                                String[] selectionArgs, Integer limit) {
+    public static <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, Cursor c,
+                                                          Integer limit) {
         List<T> rows = new ArrayList<>();
 
         //noinspection TryWithIdenticalCatches
         try {
-            Cursor c = rawQuery(query, selectionArgs);
-
             if (c != null) {
                 if (c.moveToFirst()) {
                     int i = 0;
                     Constructor<T> constructor =
-                            tableRowClass.getConstructor(Cursor.class);
+                        tableRowClass.getConstructor(Cursor.class);
 
                     do {
                         rows.add(constructor.newInstance(c));
@@ -169,6 +164,28 @@ public abstract class Data {
         }
 
         return rows;
+    }
+
+    /**
+     * Fetch the selected rows with a raw (fully specified) query.
+     *
+     * @param tableRowClass
+     *            The {@link TableRow} subclass to instantiate with the row data.
+     * @param query
+     *            A complete SQL query. Cannot be NULL!
+     * @param selectionArgs You may include ?s in selection, which will be replaced by the values
+     *                      from selectionArgs, in the order that they appear in the selection.
+     *                      The values will be bound as Strings.
+     * @param limit A maximum amount of result entries.
+     * @param <T>
+     *            The {@link TableRow} subclass to instantiate with the row data. The designated
+     *            class needs to have a constructor like this:
+     *            {@link TableRow#TableRow(Cursor)}, otherwise, your app will crash here!
+     * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
+     */
+    public <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, String query,
+                                                String[] selectionArgs, Integer limit) {
+        return getRawList(tableRowClass, rawQuery(query, selectionArgs), limit);
     }
 
     /**

@@ -42,8 +42,10 @@ import java.util.List;
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class Table<T extends TableRow> extends Data {
+
+    public static final String PRAGMA_TABLE_INFO = "PRAGMA table_info(%s)";
 
     protected final Class<T> mTableRowClass;
 
@@ -755,5 +757,42 @@ public abstract class Table<T extends TableRow> extends Data {
         Uri uri = mCr.insert(mUri, values);
 
         return uri != null ? uri.toString() : null;
+    }
+
+    /**
+     * Execute a special SQLite PRAGMA "table_info" which returns one row per column of the given
+     * table describing the column.
+     *
+     * @param db
+     *            A reference to the database.
+     * @param name
+     *            A valid table name.
+     * @return a list of {@link ColumnInfo} rows.
+     */
+    public static List<ColumnInfo> getTableInfo(SQLiteDatabase db, String name) {
+        return getRawList(ColumnInfo.class,
+            db.rawQuery(String.format(PRAGMA_TABLE_INFO, name), null), null);
+    }
+
+    /**
+     * Execute a special SQLite PRAGMA "table_info" which returns one row per column of this table
+     * describing the column.
+     *
+     * @return a list of {@link ColumnInfo} rows.
+     */
+    public List<ColumnInfo> getTableInfo() {
+        return getRawList(ColumnInfo.class,
+            String.format(PRAGMA_TABLE_INFO, mUri.getLastPathSegment()));
+    }
+
+    /**
+     * Determines, if this table has a column with the given name.
+     *
+     * @param name
+     *            The searched column name. Exact match, only!
+     * @return true, if this table has a column with the given name.
+     */
+    public boolean hasColumn(String name) {
+        return getTableInfo().contains(new ColumnInfo(name));
     }
 }
