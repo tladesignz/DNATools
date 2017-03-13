@@ -56,6 +56,7 @@ public class EditText extends android.widget.EditText {
      * on the soft keyboard or the Android buttons and before anything else
      * handles it.
      */
+    @SuppressWarnings("WeakerAccess")
     public interface OnKeyPreImeListener {
 
         /**
@@ -74,6 +75,7 @@ public class EditText extends android.widget.EditText {
     /**
      * Interface definition for a callback to be invoked when a the text was changed.
      */
+    @SuppressWarnings("WeakerAccess")
     public interface OnTextChangedListener {
 
         /**

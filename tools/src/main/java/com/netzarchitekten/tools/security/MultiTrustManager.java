@@ -221,7 +221,10 @@ public class MultiTrustManager implements X509TrustManager {
      * @return a {@link TrustManagerFactory} using the given keystore, or the default keystore if
      *            argument is NULL.
      * @throws NoSuchAlgorithmException
+     *            if no Provider supports a TrustManagerFactorySpi implementation for the default
+     *            algorithm.
      * @throws KeyStoreException
+     *            if default algorithm is null.
      */
     private static TrustManagerFactory factoryFromKeyStore(KeyStore keyStore)
         throws NoSuchAlgorithmException, KeyStoreException {

@@ -72,6 +72,7 @@ import android.widget.NumberPicker;
  *      "http://developer.android.com/training/custom-views/create-view.html">
  *      Android Training: Creating a View Class</a>
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class NumberPickerPreference extends DialogPreference {
 
     private static final int[] sStyleable = {

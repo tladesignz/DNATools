@@ -63,6 +63,7 @@ import android.widget.EditText;
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  * @see NumberPickerPreference
  */
+@SuppressWarnings("unused")
 public class NumberLimitPreference extends EditTextPreference implements OnClickListener {
 
     private static final int[] sStyleable = {
