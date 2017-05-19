@@ -37,26 +37,49 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.NumberPicker;
 
+import com.netzarchitekten.tools.R;
+
 /**
  * <p>
  * A {@link android.preference.Preference} that displays a number picker as a
  * dialog.
  * </p>
+ * To use the picker, you will have to import the attributes declaration as follows:
+ * <pre>
+ * {@code
+ * <PreferenceScreen
+ *     xmlns:android="http://schemas.android.com/apk/res/android"
+ *     xmlns:dna="http://schemas.android.com/apk/res-auto">
+ * }
+ * </pre>
  * <p>
  * The picker is configurable using the following attributes:
  * </p>
  * <ul>
- * <li><i>android:minDate="&lt;integer&gt;"</i>: Set the minimum value, the
- * picker allows. (DEFAULT 0)</li>
- * <li><i>android:max="&lt;integer&gt;"</i>: Set the maximum value, the picker
- * allows. (DEFAULT 100)</li>
- * <li><i>android:selectable="&lt;boolean&gt;"</i>: Set the wrap style of the
- * picker: <i>true</i> (DEFAULT): picker wraps around, <i>false</i>: picker
- * doesn't wrap around.</li>
+ * <li>
+ *     <code>dna:min="&lt;integer&gt;"</code>:
+ *     Set the minimum value, the picker allows. (DEFAULT 0)
+ * </li>
+ * <li>
+ *     <code>dna:max="&lt;integer&gt;"</code>:
+ *     Set the maximum value, the picker allows. (DEFAULT 100)
+ * </li>
+ * <li>
+ *     <code>dna:values="@array/&lt;your_string_array_name&gt;"</code>:
+ *     You can define your own string array in <code>res/values/arrays.xml</code> to be displayed.
+ *     <b>Note:</b> The length of the displayed values array must be equal to the range of
+ *     selectable numbers which is equal to <code>dna:max - dna:min + 1</code>.
+ * </li>
+ * <li>
+ *     <code>dna:wrap="&lt;boolean&gt;"</code>:
+ *     Set the wrap style of the picker:
+ *     <code>true</code> (DEFAULT): picker wraps around,
+ *     <code>false</code>: picker doesn't wrap around.
+ * </li>
  * </ul>
  * <p>
- * The re-/mis-use of the android attributes is done, in order to avoid needing
- * to declare own attributes which you would need to do in your own project.
+ * Note: This will only work in Android Studio, not in old Eclipse projects, due to the inability
+ * to package XML resources alongside Java classes.
  * </p>
  *
  * @author <a href="http://stackoverflow.com/users/3455016/rob-meeuwisse">Rob
@@ -76,13 +99,16 @@ import android.widget.NumberPicker;
 public class NumberPickerPreference extends DialogPreference {
 
     private static final int[] sStyleable = {
-            android.R.attr.minDate,
-            android.R.attr.max,
-            android.R.attr.selectable };
+            R.styleable.NumberPickerPreference_min,
+            R.styleable.NumberPickerPreference_max,
+            R.styleable.NumberPickerPreference_wrap,
+            R.styleable.NumberPickerPreference_values };
 
     private int mMin;
 
     private int mMax;
+
+    private String[] mValues;
 
     private boolean mWrap = true;
 
@@ -146,6 +172,7 @@ public class NumberPickerPreference extends DialogPreference {
         mPicker.setMinValue(mMin);
         mPicker.setMaxValue(mMax);
         mPicker.setWrapSelectorWheel(mWrap);
+        if (mValues != null) mPicker.setDisplayedValues(mValues);
         mPicker.setValue(getValue());
     }
 
@@ -272,21 +299,23 @@ public class NumberPickerPreference extends DialogPreference {
      *              The attributes of the XML tag that is inflating the preference.
      */
     private void applyAttributes(AttributeSet attrs) {
-        TypedArray a = getContext().obtainStyledAttributes(attrs, sStyleable, 0, 0);
+        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.NumberPickerPreference);
 
         for (int i = 0; i < sStyleable.length; i++) {
-            switch (sStyleable[i]) {
-                case android.R.attr.minDate:
-                    mMin = a.getInt(i, 0);
-                    break;
+            if (sStyleable[i] == R.styleable.NumberPickerPreference_min) {
+                if (mValues == null) mMin = a.getInt(i, 0);
+            } else if (sStyleable[i] == R.styleable.NumberPickerPreference_max) {
+                if (mValues == null) mMax = a.getInt(i, 100);
+            } else if (sStyleable[i] == R.styleable.NumberPickerPreference_wrap) {
+                mWrap = a.getBoolean(i, true);
+            } else if (sStyleable[i] == R.styleable.NumberPickerPreference_values) {
+                CharSequence[] values = a.getTextArray(i);
+                mValues = new String[values.length];
+                for (int j = 0; j < values.length; j++) {
+                    mValues[j] = values[j].toString();
+                }
 
-                case android.R.attr.max:
-                    mMax = a.getInt(i, 100);
-                    break;
-
-                case android.R.attr.selectable:
-                    mWrap = a.getBoolean(i, true);
-                    break;
+                if (mMax - mMin != mValues.length - 1) mMax = mMin + mValues.length - 1;
             }
         }
 
