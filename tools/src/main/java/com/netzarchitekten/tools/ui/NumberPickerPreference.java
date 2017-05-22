@@ -310,12 +310,15 @@ public class NumberPickerPreference extends DialogPreference {
                 mWrap = a.getBoolean(i, true);
             } else if (sStyleable[i] == R.styleable.NumberPickerPreference_values) {
                 CharSequence[] values = a.getTextArray(i);
-                mValues = new String[values.length];
-                for (int j = 0; j < values.length; j++) {
-                    mValues[j] = values[j].toString();
-                }
 
-                if (mMax - mMin != mValues.length - 1) mMax = mMin + mValues.length - 1;
+                if (values != null) {
+                    mValues = new String[values.length];
+                    for (int j = 0; j < values.length; j++) {
+                        mValues[j] = values[j].toString();
+                    }
+
+                    if (mMax - mMin != mValues.length - 1) mMax = mMin + mValues.length - 1;
+                }
             }
         }
 
