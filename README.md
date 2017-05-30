@@ -54,7 +54,7 @@ In your module's `build.gradle` file:
 ```gradle
 dependencies {
     ...
-    compile 'com.netzarchitekten:tools:8.0.0'
+    compile 'com.netzarchitekten:tools:8.0.2'
     ...
 }
 
