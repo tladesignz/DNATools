@@ -75,26 +75,6 @@ public class ColumnInfo extends TableRow {
 
     /**
      * <p>
-     * Construct from just a name to be used in comparison operations.
-     * </p>
-     * <p>
-     * All other field will be set to null, false or MIN_VALUE.
-     * </p>
-     *
-     * @param name
-     *            The column name.
-     */
-    public ColumnInfo(String name) {
-        mId = Long.MIN_VALUE;
-        mName = name;
-        mType = null;
-        mNotNull = false;
-        mDefaultValue = null;
-        mPrimaryKey = false;
-    }
-
-    /**
-     * <p>
      * Construct from given arguments.
      * </p>
      * <p>
@@ -121,6 +101,21 @@ public class ColumnInfo extends TableRow {
         mNotNull = notNull;
         mDefaultValue = defaultValue;
         mPrimaryKey = primaryKey;
+    }
+
+    /**
+     * <p>
+     * Construct from just a name to be used in comparison operations.
+     * </p>
+     * <p>
+     * All other field will be set to null, false or MIN_VALUE.
+     * </p>
+     *
+     * @param name
+     *            The column name.
+     */
+    public ColumnInfo(String name) {
+        this(Long.MIN_VALUE, name, null, false, null, false);
     }
 
     /**
@@ -204,12 +199,6 @@ public class ColumnInfo extends TableRow {
 
     @Override
     public int hashCode() {
-        int result = (int) (mId ^ (mId >>> 32));
-        result = 31 * result + (mName != null ? mName.hashCode() : 0);
-        result = 31 * result + (mType != null ? mType.hashCode() : 0);
-        result = 31 * result + (mNotNull ? 1 : 0);
-        result = 31 * result + (mDefaultValue != null ? mDefaultValue.hashCode() : 0);
-        result = 31 * result + (mPrimaryKey ? 1 : 0);
-        return result;
+        return mName != null ? mName.hashCode() : 0;
     }
 }
