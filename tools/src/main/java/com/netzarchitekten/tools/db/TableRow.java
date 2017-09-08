@@ -298,7 +298,7 @@ public abstract class TableRow {
      * inexistent column will return false, everything else will return true.
      * </p>
      * <p>
-     * Effectively a proxy to {@link Cursor#getColumnIndex(String)} and
+     * Effectively a proxy to {@link Cursor#getColumnIndex(String)}, {@link Cursor#isNull(int)} and
      * {@link Cursor#getInt(int)}.
      * </p>
      * <p>
@@ -318,6 +318,34 @@ public abstract class TableRow {
         int idx = getIndex(c, column);
 
         return idx >= 0 && c.getInt(idx) != 0;
+    }
+
+    /**
+     * <p>
+     * Treats an {@link Cursor#FIELD_TYPE_INTEGER} column as Boolean object: NULL,
+     * inexistent column will return null, 0 will return false, everything else will return true.
+     * </p>
+     * <p>
+     * Effectively a proxy to {@link Cursor#getColumnIndex(String)}, {@link Cursor#isNull(int)} and
+     * {@link Cursor#getInt(int)}.
+     * </p>
+     * <p>
+     * Handles inexistent column gracefully.
+     * </p>
+     *
+     * @param c
+     *            Cursor pointing to a specific row.
+     * @param column
+     *            The column name.
+     * @return null if NULL or column inexistent, false if 0, true else.
+     * @see Cursor#getColumnIndex(String)
+     * @see Cursor#getInt(int)
+     */
+    @SuppressWarnings("unused")
+    public static Boolean getBooleanObj(Cursor c, String column) {
+        int idx = getIndex(c, column);
+
+        return idx < 0 ? null : c.getInt(idx) != 0;
     }
 
     /**
