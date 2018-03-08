@@ -42,7 +42,7 @@ import java.util.List;
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings({"WeakerAccess", "unused", "SameParameterValue"})
 public abstract class Table<T extends TableRow> extends Data {
 
     public static final String PRAGMA_TABLE_INFO = "PRAGMA table_info(%s)";

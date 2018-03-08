@@ -40,7 +40,7 @@ import java.util.List;
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "SameParameterValue"})
 public abstract class Data {
 
     /**

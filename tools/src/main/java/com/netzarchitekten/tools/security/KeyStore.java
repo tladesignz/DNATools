@@ -52,7 +52,7 @@ import javax.net.ssl.TrustManagerFactory;
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings({"WeakerAccess", "unused", "UnusedReturnValue", "SameParameterValue"})
 public class KeyStore {
 
     public static final String TYPE_PKCS12 = "PKCS12";

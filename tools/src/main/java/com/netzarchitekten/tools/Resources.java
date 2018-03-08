@@ -139,7 +139,7 @@ public class Resources {
      * @deprecated Using this side-effect is deprecated. Use {@link #getContextWithNewLocale(Locale)}
      *      instead, which dynamically uses a better method, if available.
      */
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({"deprecation", "DeprecatedIsStillUsed"})
     @SuppressLint("NewApi")
     @Deprecated
     public Resources setLocale(Locale newLocale) {
@@ -256,7 +256,7 @@ public class Resources {
      * @deprecated Using this side-effect is deprecated. Use {@link #giveUpNewLocaleContext()}
      *      instead, which dynamically uses a better method, if available.
      */
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({"deprecation", "DeprecatedIsStillUsed"})
     @Deprecated
     public Resources resetLocale() {
         new android.content.res.Resources(mResources.getAssets(),

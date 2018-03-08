@@ -73,6 +73,7 @@ public class TlsSocketFactory extends SSLSocketFactory {
      *
      * @deprecated Better not to use this anymore, too, if it's avoidable.
      */
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     public static final String TLS_10 = "TLSv1";
 

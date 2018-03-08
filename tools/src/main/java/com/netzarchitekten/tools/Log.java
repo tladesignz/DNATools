@@ -401,7 +401,7 @@ public class Log {
         String tag = getTag();
 
         // Avoid IllegalArgumentException in #isLoggable.
-        if (tag != null && tag.length() > 23) tag = tag.substring(0, 23);
+        if (tag.length() > 23) tag = tag.substring(0, 23);
 
         return android.util.Log.isLoggable(tag, level);
     }

@@ -43,7 +43,7 @@ import android.view.ViewParent;
  *
  * @author Benjamin Erhart {@literal <berhart@netzarchitekten.com>}
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings({"WeakerAccess", "unused", "UnusedReturnValue"})
 public class ViewHelper {
 
     /**
