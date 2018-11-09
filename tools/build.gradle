@@ -8,8 +8,8 @@ android {
         //noinspection MinSdkTooLow
         minSdkVersion 11
         targetSdkVersion 28
-        versionCode 42
-        versionName '8.3.0'
+        versionCode 43
+        versionName '8.3.1'
     }
 
     buildTypes {
@@ -35,7 +35,7 @@ ext {
     siteUrl = 'https://github.com/tladesignz/DNATools'
     gitUrl = 'https://github.com/tladesignz/DNATools.git'
 
-    libraryVersion = '8.3.0'
+    libraryVersion = '8.3.1'
 
     developerId = 'berhart'
     developerName = 'Benjamin Erhart'
