@@ -45,11 +45,11 @@ import android.os.Parcel;
 @SuppressWarnings("WeakerAccess")
 public abstract class TableRow {
 
-    protected boolean mStored = false;
+    protected transient boolean mStored = false;
 
-    protected boolean mChanged = false;
+    protected transient boolean mChanged = false;
 
-    protected Table mTable = null;
+    protected transient Table mTable = null;
 
     /**
      * Explicit empty constructor, so subclasses don't need to call other constructors.
