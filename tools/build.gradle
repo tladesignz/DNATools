@@ -1,15 +1,15 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    namespace 'com.netzarchitekten.tools'
 
     defaultConfig {
         //noinspection MinSdkTooLow
         minSdkVersion 11
-        targetSdkVersion 28
-        versionCode 43
-        versionName '8.3.1'
+        targetSdkVersion 35
+        compileSdk 35
+        versionCode 44
+        versionName '8.3.2'
     }
 
     buildTypes {
@@ -17,6 +17,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 
     return void // Avoid lint warning.
@@ -48,6 +52,3 @@ ext {
 
 dependencies {
 }
-
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
