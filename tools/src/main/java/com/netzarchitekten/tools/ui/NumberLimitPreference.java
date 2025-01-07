@@ -139,16 +139,16 @@ public class NumberLimitPreference extends EditTextPreference implements OnClick
      */
     @Override
     public void onClick(View v) {
-        Double value;
+        double value;
 
         try {
-            value = Double.valueOf(getEditText().getText().toString());
+            value = Double.parseDouble(getEditText().getText().toString());
         } catch (Exception e) {
             // Trigger an error message further down.
             value = (double) (mMin - 1);
         }
 
-        if (value != null && (value < mMin || value > mMax)) {
+        if (value < mMin || value > mMax) {
             getEditText().requestFocus();
             getEditText().setError(mErrorText == null
                 ? String.format(Locale.getDefault(), "Value needs to be between %d and %d!", mMin, mMax)

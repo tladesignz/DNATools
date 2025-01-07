@@ -121,6 +121,7 @@ public class CertificateHelper {
         }
 
         try {
+            //noinspection CharsetObjectCanBeUsed
             bytes = certificate.getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
             // We can safely ignore this, since Android supports UTF-8 since API 1.

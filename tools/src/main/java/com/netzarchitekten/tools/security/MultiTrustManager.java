@@ -212,7 +212,7 @@ public class MultiTrustManager implements X509TrustManager {
             certificates.addAll(Arrays.asList(tm.getAcceptedIssuers()));
         }
 
-        return certificates.toArray(new X509Certificate[certificates.size()]);
+        return certificates.toArray(new X509Certificate[0]);
     }
 
     /**

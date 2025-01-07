@@ -49,7 +49,7 @@ public abstract class TableRow {
 
     protected transient boolean mChanged = false;
 
-    protected transient Table mTable = null;
+    protected transient Table<TableRow> mTable = null;
 
     /**
      * Explicit empty constructor, so subclasses don't need to call other constructors.
@@ -64,7 +64,7 @@ public abstract class TableRow {
      * @param table
      *              The {@link Table} this {@link TableRow} belongs to.
      */
-    protected TableRow(Table table) {
+    protected TableRow(Table<TableRow> table) {
         setTable(table);
     }
 
@@ -88,7 +88,7 @@ public abstract class TableRow {
      *              A {@link Cursor} pointing to this row's data in the database.
      */
     @SuppressWarnings("UnusedParameters")
-    protected TableRow(Table table, Cursor cursor) {
+    protected TableRow(Table<TableRow> table, Cursor cursor) {
         this(table);
 
         mStored = true;
@@ -102,7 +102,7 @@ public abstract class TableRow {
      *              The {@link Table} this {@link TableRow} belongs to.
      * @return this object for fluency.
      */
-    public TableRow setTable(Table table) {
+    public TableRow setTable(Table<TableRow> table) {
         mTable = table;
 
         return this;
@@ -113,7 +113,7 @@ public abstract class TableRow {
      *         without one and it wasn't set, yet.
      */
     @SuppressWarnings("unused")
-    public Table getTable() {
+    public Table<TableRow> getTable() {
         return mTable;
     }
 
@@ -184,7 +184,7 @@ public abstract class TableRow {
      * @param ids
      *            The column values to identify this row uniquely in the order
      *            used in the where argument.
-     * @return The new auto-increment ID of this row, if it was succesfully
+     * @return The new auto-increment ID of this row, if it was successfully
      *         INSERTed, or the first ids argument, if it was an UPDATE or if
      *         the INSERT failed. Ignore this on compound primary keys. It won't
      *         make sense in that case.

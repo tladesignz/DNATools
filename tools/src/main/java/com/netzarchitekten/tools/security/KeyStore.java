@@ -168,6 +168,7 @@ public class KeyStore {
     public KeyStore(String keyStore, String password)
         throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
 
+        //noinspection CharsetObjectCanBeUsed
         this(keyStore == null ? null : new ByteArrayInputStream(keyStore.getBytes("UTF-8")),
             password);
     }
@@ -195,6 +196,7 @@ public class KeyStore {
     public KeyStore(String keyStore, char[] password)
         throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
 
+        //noinspection CharsetObjectCanBeUsed
         this(keyStore == null ? null : new ByteArrayInputStream(keyStore.getBytes("UTF-8")),
             password);
     }

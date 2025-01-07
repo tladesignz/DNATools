@@ -122,12 +122,12 @@ public abstract class Data {
      *            class needs to have a constructor like this:
      *            {@link TableRow#TableRow(Cursor)}, otherwise, your app will crash here!
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
+     * @noinspection CallToPrintStackTrace
      */
     public static <T extends TableRow> List<T> getRawList(Class<T> tableRowClass, Cursor c,
                                                           Integer limit) {
         List<T> rows = new ArrayList<>();
 
-        //noinspection TryWithIdenticalCatches
         try {
             if (c != null) {
                 if (c.moveToFirst()) {
@@ -246,7 +246,7 @@ public abstract class Data {
     public <T extends TableRow> T getRaw(Class<T> tableRowClass, String query, String[] selectionArgs) {
         List<T> rows = getRawList(tableRowClass, query, selectionArgs, 1);
 
-        return rows != null && rows.size() > 0 ? rows.get(0) : null;
+        return rows != null && !rows.isEmpty() ? rows.get(0) : null;
     }
 
     /**

@@ -163,10 +163,10 @@ public abstract class Table<T extends TableRow> extends Data {
      * </p>
      *
      * @return a new, unstored {@link TableRow} subclass.
+     * @noinspection CallToPrintStackTrace
      */
     @SuppressWarnings("unused")
     public T newRow() {
-        //noinspection TryWithIdenticalCatches
         try {
             return mTableRowClass.getConstructor(this.getClass()).newInstance(this);
         } catch (NoSuchMethodException e) {
@@ -201,10 +201,10 @@ public abstract class Table<T extends TableRow> extends Data {
      *            A {@link Cursor} pointing to a row in this table.
      *
      * @return a {@link TableRow} subclass containing values from the database.
+     * @noinspection CallToPrintStackTrace
      */
     @SuppressWarnings("unused")
     public T newRow(Cursor c) {
-        //noinspection TryWithIdenticalCatches
         try {
             return mTableRowClass.getConstructor(this.getClass(), Cursor.class).newInstance(this, c);
         } catch (NoSuchMethodException e) {
@@ -251,13 +251,13 @@ public abstract class Table<T extends TableRow> extends Data {
      * @param limit
      *            A maximum amount of result entries.
      * @return a {@link List} of {@link TableRow}s, possibly empty, never null.
+     * @noinspection CallToPrintStackTrace
      */
     protected List<T> getList(String[] projection, String selection, String[] selectionArgs,
                               String sortOrder, Integer limit) {
 
         List<T> rows = new ArrayList<>();
 
-        //noinspection TryWithIdenticalCatches
         try {
             Cursor c = mCr.query(mUri, projection, selection, selectionArgs, sortOrder);
 
@@ -444,7 +444,7 @@ public abstract class Table<T extends TableRow> extends Data {
     protected T get(String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         List<T> rows = getList(projection, selection, selectionArgs, sortOrder, 1);
 
-        return rows != null && rows.size() > 0 ? rows.get(0) : null;
+        return rows != null && !rows.isEmpty() ? rows.get(0) : null;
     }
 
     /**

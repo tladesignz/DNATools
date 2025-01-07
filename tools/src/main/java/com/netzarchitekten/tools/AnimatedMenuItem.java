@@ -29,7 +29,6 @@ import android.app.Activity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -84,13 +83,7 @@ public class AnimatedMenuItem {
 
         if (actionView != null) {
             // When we provide our own layout, this connection has to be done manually.
-            actionView.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    menu.performIdentifierAction(mItem.getItemId(), 0);
-                }
-            });
+            actionView.setOnClickListener(v -> menu.performIdentifierAction(mItem.getItemId(), 0));
         }
 
         if (animationId == null) {

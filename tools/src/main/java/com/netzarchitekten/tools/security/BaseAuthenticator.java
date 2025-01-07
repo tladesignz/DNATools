@@ -83,7 +83,7 @@ public abstract class BaseAuthenticator {
     public abstract SSLSocketFactory getFactory() throws CertificateException;
 
     /**
-     * @return a list of filenames of certificate files to load, stored in the "assets" folder of
+     * @return an array of filenames of certificate files to load, stored in the "assets" folder of
      * the app package or NULL, if you don't want to use the server certificate authentication
      * feature and use Android's default integrated root certificates for that, instead.
      */
@@ -121,7 +121,7 @@ public abstract class BaseAuthenticator {
      * disabled by default.
      * </p>
      *
-     * @return a list of supported protocols.
+     * @return an array of supported protocols.
      * @see TlsSocketFactory
      */
     protected String[] getSupportedProtocols() {

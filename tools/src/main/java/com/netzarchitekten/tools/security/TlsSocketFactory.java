@@ -262,7 +262,7 @@ public class TlsSocketFactory extends SSLSocketFactory {
      * {@link #mProtocols} isn't null.
      */
     private Socket forceProtocols(Socket socket) {
-        if(mProtocols != null && socket != null && (socket instanceof SSLSocket)) {
+        if(mProtocols != null && (socket instanceof SSLSocket)) {
             SSLSocket sslSocket = (SSLSocket) socket;
 
             // We do this only once, it's expensive.
@@ -270,7 +270,7 @@ public class TlsSocketFactory extends SSLSocketFactory {
                 List<String> supported = new ArrayList<>(Arrays.asList(sslSocket.getSupportedProtocols()));
                 supported.retainAll(mProtocols);
 
-                mSupportedFiltered = supported.toArray(new String[supported.size()]);
+                mSupportedFiltered = supported.toArray(new String[0]);
             }
 
             sslSocket.setEnabledProtocols(mSupportedFiltered);

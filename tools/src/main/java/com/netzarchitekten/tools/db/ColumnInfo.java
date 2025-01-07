@@ -28,6 +28,7 @@ package com.netzarchitekten.tools.db;
 import android.database.Cursor;
 
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Implementation of a result row for the SQLite <code>PRAGMA table_info(table)</code>.
@@ -194,7 +195,7 @@ public class ColumnInfo extends TableRow {
 
         ColumnInfo that = (ColumnInfo) o;
 
-        return mName != null ? mName.equals(that.mName) : that.mName == null;
+        return Objects.equals(mName, that.mName);
     }
 
     @Override

@@ -410,7 +410,7 @@ public class Log {
      * @return a String like "com.example.CallingClass#callingMethod#123".
      */
     private static String getTag() {
-        StackTraceElement trace[] = Thread.currentThread().getStackTrace();
+        StackTraceElement[] trace = Thread.currentThread().getStackTrace();
 
         return trace[4].getClassName() + "#" + trace[4].getMethodName() + "#"
             + trace[4].getLineNumber();
