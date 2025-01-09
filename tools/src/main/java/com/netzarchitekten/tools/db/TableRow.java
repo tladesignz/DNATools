@@ -49,7 +49,7 @@ public abstract class TableRow {
 
     protected transient boolean mChanged = false;
 
-    protected transient Table<TableRow> mTable = null;
+    protected transient Table mTable = null;
 
     /**
      * Explicit empty constructor, so subclasses don't need to call other constructors.
@@ -64,7 +64,7 @@ public abstract class TableRow {
      * @param table
      *              The {@link Table} this {@link TableRow} belongs to.
      */
-    protected TableRow(Table<TableRow> table) {
+    protected TableRow(Table table) {
         setTable(table);
     }
 
@@ -88,7 +88,7 @@ public abstract class TableRow {
      *              A {@link Cursor} pointing to this row's data in the database.
      */
     @SuppressWarnings("UnusedParameters")
-    protected TableRow(Table<TableRow> table, Cursor cursor) {
+    protected TableRow(Table table, Cursor cursor) {
         this(table);
 
         mStored = true;
@@ -102,7 +102,7 @@ public abstract class TableRow {
      *              The {@link Table} this {@link TableRow} belongs to.
      * @return this object for fluency.
      */
-    public TableRow setTable(Table<TableRow> table) {
+    public TableRow setTable(Table table) {
         mTable = table;
 
         return this;
@@ -113,7 +113,7 @@ public abstract class TableRow {
      *         without one and it wasn't set, yet.
      */
     @SuppressWarnings("unused")
-    public Table<TableRow> getTable() {
+    public Table getTable() {
         return mTable;
     }
 
